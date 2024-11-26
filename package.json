@@ -3,6 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
+    "@danielx/civet": "^0.8.16",
     "@types/bun": "latest"
   },
   "peerDependencies": {
