@@ -1,12 +1,16 @@
 {
   "name": "advent-of-code-2024",
   "module": "index.ts",
-  "type": "module",
   "devDependencies": {
     "@danielx/civet": "^0.8.16",
-    "@types/bun": "latest"
+    "@types/bun": "^1.1.14",
+    "@types/lodash": "^4.17.13"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

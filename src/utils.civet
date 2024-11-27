@@ -1,0 +1,155 @@
+export function getLines<T extends string>(input: string): T[]
+  lines := input.split '\n'
+  lines.pop() if lines.-1 is ''
+  lines as T[]
+
+export function getNumbers(input: string): number[]
+  lines := getLines input
+  lines.length is 1
+    ? lines.0.split ',' |> .map +&
+    : lines.map +&
+
+export function getArray2d<T extends string>(
+  input: string,
+  splitBy = ''
+): T[][]
+  getLines(input).map &.split(splitBy) as T[]
+
+export function asc(a: any, b: any): number
+  a - b
+
+export function desc(a: any, b: any): number
+  b - a
+
+export function inRange(min: number, value: number, max: number): boolean 
+  min <= value <= max
+
+export function getManhattanDistance(
+  a: Point,
+  b: Point = x: 0, y: 0
+): number
+  Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
+
+export function getDistance(a: Point, b: Point): number
+  Math.hypot a.x - b.x, a.y - b.y
+
+export function match<
+  Variant extends PropertyKey,
+  Options extends Record<Variant, () => any>
+>(variant: Variant, options: Options): ReturnType<Options[Variant]>
+  options[variant]()
+
+export function getColumn<T>(array: T[][], columnNumber: number): T[]
+  for row of array
+    row[columnNumber]
+
+export function loop2d<T>(
+  array: T[][],
+  callback: (y: number, x: number, item: T) => void
+): void
+  for y of [0...array.length]
+    for x of [0...array[y]!.length]
+      callback y, x, array[y]![x]!
+
+export function toNumber(str: string): number 
+  +(str.match(/\-?\d+((.|,)\d+)?/)?.[0] or '')
+
+export function toNumbers(str: string): number[]
+  (str.match(/\-?\d+(\.\d+)?/g) ?? []).map +&
+
+export function divisible(a: number, b: number): boolean
+  a % b is 0
+
+/** Greatest common divisor */
+export function getGcd(a: number, b: number): number 
+  !b ? a : getGcd(b, a % b)
+
+/** Least Common Multiple */
+export function getLcm(a: number[]): number
+export function getLcm(a: number, b: number): number
+export function getLcm(a: number | number[], b?: number): number
+ return Array.isArray(a)
+    ? a.reduce getLcm, 1
+    : // @ts-ignore
+      a * (b / getGcd a, b)
+
+export function adjacentPoints<T>(arr: T[][], x: number, y: number)
+  [
+    item: arr[y - 1]?.[x]
+    x: x,
+    y: y - 1
+  ,
+    item: arr[y - 1]?.[x + 1]
+    x: x + 1,
+    y: y - 1
+  ,
+    item: arr[y - 1]?.[x - 1]
+    x: x - 1,
+    y: y - 1
+  ,
+    item: arr[y + 1]?.[x]
+    x: x,
+    y: y + 1
+  ,
+    item: arr[y + 1]?.[x + 1]
+    x: x + 1,
+    y: y + 1
+  ,
+    item: arr[y + 1]?.[x - 1]
+    x: x - 1,
+    y: y + 1
+  ,
+    item: arr[y][x - 1]
+    x: x - 1,
+    y: y
+  ,
+    item: arr[y][x + 1]
+    x: x + 1,
+    y: y
+  ]
+
+export function toKeys<Item, Key extends string>(...keys: Key[])
+  function (item: Item[]) 
+    obj := {} as Record<Key, Item>
+    for i of [0...keys.length]
+      obj[keys[i]] = item[i]
+    obj
+
+export function printArray(arr: any[], empty = '.'): void
+  for y of [0...arr.length]
+    for x of [0...arr[y]!.length]
+      process.stdout.write arr[y]![x] ?? empty
+    console.log()
+
+export function createArray<T>(y: number, x: number, filler: T): T[][]
+  new Array(y).fill(0).map
+    () => new Array(x).fill filler
+
+export function exhaustiveCheck(arg: never): void
+  arg;
+
+export function isPoint (arg: any): arg is Point
+  arg and arg.x <? 'number' and arg.y <? 'number'
+
+
+export function isPoint3d (arg: any): arg is Point3d
+  arg and arg.x <? 'number' and arg.y <? 'number' and arg.z <? 'number'
+
+export function log (...args: any[]): void
+  console.log ...args
+
+export function int (nr: string): number
+  parseInt nr
+
+export function float (nr: string): number
+  parseFloat nr
+
+export function multiply(arr: number[]): number
+  arr.reduce (a, b) => a * b
+
+export function countChars(str: string)
+  counter: Record<string, number> := {}
+  for c of str.split ''
+    (counter[c] ?= 0)++
+  counter
+  

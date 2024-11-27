@@ -173,3 +173,7 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# project specific
+auto-import.d.ts
+input.txt
