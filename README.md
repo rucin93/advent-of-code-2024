@@ -1,9 +1,8 @@
-# advent-of-code-2024
+# Advent of Code 2024
 
-To install dependencies:
+My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written in [Civet](https://civet.dev).
 
-```bash
-bun install
+
+```ts
+input |> getNumbers |> sum |> log
 ```
-
-This project was created using `bun init` in bun v1.1.34. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

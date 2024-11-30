@@ -1,0 +1,22 @@
+{ Glob, file, write } from bun
+
+readme .= '# Advent of Code 2024
+
+My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written in [Civet](https://civet.dev).
+
+'
+glob := new Glob './src/[0-9]*'
+
+for path of glob.scanSync({ -onlyFiles })
+  story := file path + '/story.md' |> await .text()
+  code := file path + '/index.civet' |> await .text()
+  readme += `${story}
+\`\`\`ts
+${code.trim()}
+\`\`\`
+
+`
+
+write './readme.md', readme.trim()
+
+console.log readme
