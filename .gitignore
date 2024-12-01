@@ -177,3 +177,5 @@ dist
 # project specific
 auto-import.d.ts
 input.txt
+
+.env
