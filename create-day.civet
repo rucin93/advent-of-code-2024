@@ -1,0 +1,66 @@
+fs from fs
+path from path
+process from process
+dotenv from dotenv
+
+dotenv.config()
+
+unless process.env.SESSION
+  console.error 'Error: SESSION environment variable not set'
+  process.exit 1
+
+unless process.env.YEAR
+  console.error 'Error: YEAR environment variable not set'
+  process.exit 1
+
+unless process.argv.2
+  console.error 'Error: day number not provided'
+  process.exit 1
+
+dirName := process.argv.2.padStart 2, '0'
+dirPath := path.join process.cwd(), 'src', dirName
+
+unless fs.existsSync dirPath
+  fs.mkdirSync dirPath, recursive: true
+
+day := parseInt dirName
+year := parseInt process.env.YEAR 
+
+title := await fetch `https://adventofcode.com/${year}/day/${day}`
+data := await title.text()
+titleMatch := data.match /<h2>[-]{3}(.*)[-]{3}<\/h2>/
+
+unless titleMatch?.1
+  console.error 'Error: Could not fetch title'
+  process.exit 1
+
+if !fs.existsSync path.join(dirPath, 'story.md')
+  fs.writeFileSync
+    path.join(dirPath, 'story.md'),
+    `## ${titleMatch[1].trim()} ⭐⭐\n`
+  console.log `✅ ${dirName}/story.md`
+
+if !fs.existsSync path.join(dirPath, 'index.civet')
+  fs.writeFileSync 
+    path.join(dirPath, 'index.civet'),
+    `// Path: src/${dirName}/index.civet\n\n`
+  console.log `✅ ${dirName}/index.civet`
+
+if !fs.existsSync path.join(dirPath, 'input.txt')
+  inputData := await fetch `https://adventofcode.com/${year}/day/${day}/input`,
+    headers:
+      cookie: `session=${process.env.SESSION}`
+
+  fs.writeFileSync
+    path.join(dirPath, 'input.txt'),
+    await inputData.text()
+
+  console.log `✅ ${dirName}/input.txt`
+
+console.log `
+\x1b[32m🎄🎅 Advent of Code 2024 🎅🎄\x1b[0m
+
+\x1b[33m --- ${titleMatch[1].trim()} --- \x1b[0m
+
+\x1b[1mHappy coding and good luck!\x1b[0m
+`
