@@ -1,6 +1,7 @@
 fs from fs
 path from path
 process from process
+axios from axios
 dotenv from dotenv
 
 dotenv.config()
@@ -26,8 +27,7 @@ unless fs.existsSync dirPath
 day := parseInt dirName
 year := parseInt process.env.YEAR 
 
-title := await fetch `https://adventofcode.com/${year}/day/${day}`
-data := await title.text()
+{ data } := await axios.get `https://adventofcode.com/${year}/day/${day}`
 titleMatch := data.match /<h2>[-]{3}(.*)[-]{3}<\/h2>/
 
 unless titleMatch?.1
@@ -47,13 +47,13 @@ if !fs.existsSync path.join(dirPath, 'index.civet')
   console.log `✅ ${dirName}/index.civet`
 
 if !fs.existsSync path.join(dirPath, 'input.txt')
-  inputData := await fetch `https://adventofcode.com/${year}/day/${day}/input`,
-    headers:
-      cookie: `session=${process.env.SESSION}`
+  { data } := await axios.get `https://adventofcode.com/${year}/day/${day}/input`,
+  headers:
+    Cookie: `session=${process.env.SESSION}`
 
   fs.writeFileSync
     path.join(dirPath, 'input.txt'),
-    await inputData.text()
+    data
 
   console.log `✅ ${dirName}/input.txt`
 
