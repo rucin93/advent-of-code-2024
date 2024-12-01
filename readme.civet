@@ -17,6 +17,6 @@ ${code.trim()}
 
 `
 
-write './readme.md', readme.trim()
+write './readme.md', readme.trim() + '\n'
 
 console.log readme
