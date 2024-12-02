@@ -1,0 +1,25 @@
+reports := input
+  |> getLines
+  |> .map toNumbers
+
+
+isSafe := (report: number[]) => {
+  dir := report.1 - report.0;
+
+  return report[1..].every 
+    (level, index) =>
+      if dir === 0 or (dir < 0 && level > report[index]) or (dir > 0 && level < report[index]) return false
+      return 0 < abs(level - report[index]) < 4
+}
+
+part1 := reports
+  |> .filter (report) => isSafe report
+  |> .length
+
+
+part2 := reports
+  |> .filter (report) => isSafe(report) or report.some (level, index) => isSafe report.toSpliced index, 1
+  |> .length
+
+console.log part1
+console.log part2
