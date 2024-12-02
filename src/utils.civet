@@ -138,8 +138,10 @@ export function isPoint3d (arg: any): arg is Point3d
 export function log (...args: any[]): void
   console.log ...args
 
-export function int (nr: string): number
-  parseInt nr
+export function int (nr: string | boolean): number
+  if nr <? "boolean"
+    return nr ? 1 : 0
+  return parseInt nr
 
 export function float (nr: string): number
   parseFloat nr
