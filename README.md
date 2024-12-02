@@ -5,15 +5,12 @@ My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written
 ## Day 2: Red-Nosed Reports ⭐⭐
 
 ```ts
-reports := input
-  |> getLines
-  |> .map toNumbers
+reports := getLines(input).map toNumbers
 
 function isSafe(report: number[])
   dir := report.1 - report.0 > 0
-
   for every i of [0...report# - 1]
-    (0 < report[i + int dir] - report[i + int !dir] < 4)
+   (0 < report[i + int dir] - report[i + int !dir] < 4)
 
 part1 := reports.filter (report) => isSafe report
 part2 := reports.filter (report) => isSafe(report) or report.some (level, index) => isSafe report.toSpliced index, 1
