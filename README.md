@@ -13,7 +13,7 @@ function isSafe(report: number[])
   dir := report.1 - report.0 > 0
 
   for every i of [0...report# - 1]
-    (1 <= report[i + int dir] - report[i + int !dir] <= 3)
+    (0 < report[i + int dir] - report[i + int !dir] < 4)
 
 part1 := reports.filter (report) => isSafe report
 part2 := reports.filter (report) => isSafe(report) or report.some (level, index) => isSafe report.toSpliced index, 1
