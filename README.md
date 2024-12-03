@@ -5,9 +5,7 @@ My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written
 ## Day 3: Mull It Over ⭐⭐
 
 ```ts
-function mul (a:number, b:number) {
-  return a * b
-}
+mul := multiply
 
 input.match /mul\(\d+,\d+\)/g |> ?.reduce (acc, match) => acc + eval(match), 0 |> log
 

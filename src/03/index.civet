@@ -1,6 +1,4 @@
-function mul (a:number, b:number) {
-  return a * b
-}
+mul := multiply
 
 input.match /mul\(\d+,\d+\)/g |> ?.reduce (acc, match) => acc + eval(match), 0 |> log
 
