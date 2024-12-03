@@ -2,6 +2,25 @@
 
 My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written in [Civet](https://civet.dev).
 
+## Day 3: Mull It Over ⭐⭐
+
+```ts
+function mul (a:number, b:number) {
+  return a * b
+}
+
+input.match /mul\(\d+,\d+\)/g |> ?.reduce (acc, match) => acc + eval(match), 0 |> log
+
+let enabed = true
+input.match /mul\(\d+,\d+\)|do(|n't)\(\)/g |> ?.reduce (acc, match) => 
+  if match is 'do()' then enabed = true
+  if match is 'don\'t()' then enabed = false
+  if enabed and match.includes('mul') then 
+    return acc + eval(match)
+  return acc
+,0 |> log
+```
+
 ## Day 2: Red-Nosed Reports ⭐⭐
 
 ```ts
