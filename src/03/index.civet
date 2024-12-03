@@ -8,7 +8,7 @@ let enabed = true
 input.match /mul\(\d+,\d+\)|do(|n't)\(\)/g |> ?.reduce (acc, match) => 
   if match is 'do()' then enabed = true
   if match is 'don\'t()' then enabed = false
-  if enabed and match.includes('mul') then 
-    return acc + eval(match)
+  if enabed and match.includes 'mul' then 
+    return acc + eval match
   return acc
 ,0 |> log
