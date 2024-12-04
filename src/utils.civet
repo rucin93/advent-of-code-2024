@@ -138,10 +138,12 @@ export function isPoint3d (arg: any): arg is Point3d
 export function log (...args: any[]): void
   console.log ...args
 
-export function int (nr: string | boolean): number
+export function int (nr: string | boolean | number): number
   if nr <? "boolean"
     return nr ? 1 : 0
-  return parseInt nr
+  if nr <? "string"
+    return parseInt nr
+  return nr
 
 export function float (nr: string): number
   parseFloat nr
@@ -172,3 +174,11 @@ export function rotateClockwise<T>(arr: T[][]): T[][]
 
 export function abs(nr: number): number
   Math.abs nr
+
+export function sumLoop2d<T>(
+  array: T[][],
+  callback: (y: number, x: number, item: T) => Parameters<typeof int>[0]
+): number
+  for sum y of [0...array.length]
+    for sum x of [0...array[y]!.length]
+      int callback y, x, array[y]![x]!

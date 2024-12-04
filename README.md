@@ -2,21 +2,20 @@
 
 My solutions to the [AoC 2024](https://adventofcode.com/2024) challenges written in [Civet](https://civet.dev).
 
-## Day 3: Mull It Over ⭐⭐
+## Day 1: Historian Hysteria ⭐⭐
 
 ```ts
-mul := multiply
+[left, right] := input
+  |> getLines
+  |> .map toNumbers
+  |> rotate
+  |> .map .sort asc
 
-input.match /mul\(\d+,\d+\)/g |> ?.reduce (acc, match) => acc + eval(match), 0 |> log
+log 'Part 1', for sum i in left
+  abs left[i] - right[i]
 
-let enabed = true
-input.match /mul\(\d+,\d+\)|do(|n't)\(\)/g |> ?.reduce (acc, match) => 
-  if match is 'do()' then enabed = true
-  if match is 'don\'t()' then enabed = false
-  if enabed and match.includes 'mul' then 
-    return acc + eval match
-  return acc
-,0 |> log
+log 'Part 2', for sum i in left
+  left[i] * counter(right)[left[i]]
 ```
 
 ## Day 2: Red-Nosed Reports ⭐⭐
@@ -36,18 +35,42 @@ console.log part1#
 console.log part2#
 ```
 
-## Day 1: Historian Hysteria ⭐⭐
+## Day 3: Mull It Over ⭐⭐
 
 ```ts
-[left, right] := input
-  |> getLines
-  |> .map toNumbers
-  |> rotate
-  |> .map .sort asc
+mul := multiply
 
-log 'Part 1', for sum i in left
-  abs left[i] - right[i]
+input.match /mul\(\d+,\d+\)/g |> ?.reduce (acc, match) => acc + eval(match), 0 |> log
 
-log 'Part 2', for sum i in left
-  left[i] * counter(right)[left[i]]
+let enabed = true
+input.match /mul\(\d+,\d+\)|do(|n't)\(\)/g |> ?.reduce (acc, match) => 
+  if match is 'do()' then enabed = true
+  if match is 'don\'t()' then enabed = false
+  if enabed and match.includes 'mul' then 
+    return acc + eval match
+  return acc
+,0 |> log
+```
+
+## Day 4: Ceres Search ⭐⭐
+
+```ts
+map := getArray2d input
+points: Point[][] := flatten for x of [-1..1]
+  for y of [-1..1]
+    for l of [1..3]
+      {x: x * l, y: y * l}
+
+log sumLoop2d map, (y, x, item) =>
+  if item is not 'X' return 0
+  sum points.map (row) =>
+    'MAS' is for join point of row
+      map[y + point.y]?[x + point.x]
+
+validDiagonals := ['MS', 'SM']
+log sumLoop2d map, (y, x, item) =>
+  if item is not 'A' return 0
+  diagonal1 := map[y - 1]?[x - 1] + map[y + 1]?[x + 1]
+  diagonal2 := map[y - 1]?[x + 1] + map[y + 1]?[x - 1]
+  diagonal1 is in validDiagonals and diagonal2 is in validDiagonals
 ```
