@@ -3,10 +3,10 @@ export function getLines<T extends string>(input: string): T[]
   lines.pop() if lines.-1 is ''
   lines as T[]
 
-export function getNumbers(input: string): number[]
+export function getNumbers(input: string, char: string = `,`): number[]
   lines := getLines input
   lines.length is 1
-    ? lines.0.split ',' |> .map +&
+    ? lines.0.split char |> .map +&
     : lines.map +&
 
 export function getArray2d<T extends string>(

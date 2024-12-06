@@ -74,3 +74,28 @@ log sumLoop2d map, (y, x, item) =>
   diagonal2 := map[y - 1]?[x + 1] + map[y + 1]?[x - 1]
   diagonal1 is in validDiagonals and diagonal2 is in validDiagonals
 ```
+
+## Day 5: Print Queue ⭐⭐
+
+```ts
+[orders, updates] .= input.split('\n\n').map(getLines).map .map toNumbers
+
+isValid := (update: number[]) => {
+  indices := new Map update.map (a, b) => [a, b]
+
+  orders.every (order) =>
+    [aIndex, bIndex] := [indices.get(order.0), indices.get(order.1)]
+    aIndex && bIndex ? aIndex < bIndex : true
+}
+
+log for sum update of updates.filter (update) => isValid update
+  update[(update# - 1) / 2]
+
+fixedUpdates := updates.filter (update) => !isValid update |> .map (update) => 
+  update.toSorted (a, b) => 
+    order := orders.find ([x, y]) => (x is a and y is b) or (x is b and y is a)
+    order ? order.0 is a ? -1 : 1 : 0
+
+log for sum update of fixedUpdates
+  update[(update# - 1) / 2]
+```
