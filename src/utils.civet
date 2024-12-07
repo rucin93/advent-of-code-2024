@@ -182,3 +182,9 @@ export function sumLoop2d<T>(
   for sum y of [0...array.length]
     for sum x of [0...array[y]!.length]
       int callback y, x, array[y]![x]!
+
+export function permutations(chars: string, length: number = chars.length): string[]
+  return [''] if length <= 0
+  flatten for combo of permutations chars, length - 1
+    for ch of chars
+      combo + ch

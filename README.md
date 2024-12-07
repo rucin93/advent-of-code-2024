@@ -99,3 +99,82 @@ fixedUpdates := updates.filter (update) => !isValid update |> .map (update) =>
 log for sum update of fixedUpdates
   update[(update# - 1) / 2]
 ```
+
+## Day 6: Guard Gallivant ⭐⭐
+
+```ts
+grid := getArray2d input
+
+startY := grid.findIndex (x) => x.includes '^'
+startX := grid[startY].indexOf '^'
+
+start := { x: startX, y: startY }
+
+enum Direction {
+  UP = 0
+  RIGHT = 1
+  DOWN = 2
+  LEFT = 3
+}
+
+walk := (grid: string[][], { x, y }: Point, dir: Direction) =>
+  path := new Set [`${y}.${x}`]
+  positions := new Set [`${y}.${x}.${dir}`]
+
+  rotate := () => dir = (dir + 1) % 4
+  loop
+    switch dir
+      when Direction.UP
+        grid[y - 1]?[x] is '#' ? rotate() : y--
+      when Direction.RIGHT
+        grid[y]?[x + 1] is '#' ? rotate() : x++
+      when Direction.DOWN
+        grid[y + 1]?[x] is '#' ? rotate() : y++
+      when Direction.LEFT
+        grid[y]?[x - 1] is '#' ? rotate() : x--
+    
+    break with { path, valid: 1 } if positions.has `${y}.${x}.${dir}`
+    break with { path, valid: 0 } unless grid[y]?[x]
+
+    path.add `${y}.${x}`
+    positions.add `${y}.${x}.${dir}`
+
+
+{ path } := walk grid, start, Direction.UP
+
+log path.size
+log for sum pos of path
+  [y, x] := pos.split '.'
+  tmp := cloneDeep(grid)
+  tmp[int y][int x] = '#'
+  { valid } := walk tmp, start, Direction.UP
+  valid
+```
+
+## Day 7: Bridge Repair ⭐⭐
+
+```ts
+lines: [number, number[]][] := getLines input |>
+  .map(toNumbers)
+  .map (num) => [num.0, num[1..]]
+
+compute := (operators: string) => lines.map [test, values] =>
+  temp .= 0
+  allPermutations := permutations operators, values.#-1
+  check := for some permutation of allPermutations
+    res .= values.0
+    for op, i of permutation
+      switch op
+        when '+'
+          res += values[i+1]
+        when '*'
+          res *= values[i+1]
+        when '|'
+          res = +`${res}${values[i+1]}`
+    test is res
+  if check
+    temp += test
+
+log sum compute '+*'
+log sum compute '+*|'
+```

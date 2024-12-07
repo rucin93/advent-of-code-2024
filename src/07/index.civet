@@ -1,0 +1,23 @@
+lines: [number, number[]][] := getLines input |>
+  .map(toNumbers)
+  .map (num) => [num.0, num[1..]]
+
+compute := (operators: string) => lines.map [test, values] =>
+  temp .= 0
+  allPermutations := permutations operators, values.#-1
+  check := for some permutation of allPermutations
+    res .= values.0
+    for op, i of permutation
+      switch op
+        when '+'
+          res += values[i+1]
+        when '*'
+          res *= values[i+1]
+        when '|'
+          res = +`${res}${values[i+1]}`
+    test is res
+  if check
+    temp += test
+
+log sum compute '+*'
+log sum compute '+*|'
