@@ -38,8 +38,8 @@ function findAntinodeLocations(part: number): number
               antinodeLocations.add asKey antinodeLoc1 if isInBounds antinodeLoc1
               antinodeLocations.add asKey antinodeLoc2 if isInBounds antinodeLoc2
               
-              antinodeLoc1 = [antinodeLoc1[0] - xdiff, antinodeLoc1[1] - ydiff]
-              antinodeLoc2 = [antinodeLoc2[0] + xdiff, antinodeLoc2[1] + ydiff]
+              antinodeLoc1 = [antinodeLoc1.0 - xdiff, antinodeLoc1.1 - ydiff]
+              antinodeLoc2 = [antinodeLoc2.0 + xdiff, antinodeLoc2.1 + ydiff]
     
     antinodeLocations.size
 
