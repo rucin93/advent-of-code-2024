@@ -1,0 +1,48 @@
+grid := getArray2d input
+
+antennaMap: { [key: string]: number[][]} := {}
+
+loop2d grid, (y, x, freq) =>
+  if freq is not '.'
+    if not antennaMap[freq]
+      antennaMap[freq] = []
+    antennaMap[freq].push [y, x]
+
+isInBounds := (loc: number[]) => 0 <= loc.0 && loc.0 < grid# && 0 <= loc.1 && loc.1 < grid.0# 
+asKey := (loc: number[]) => `${loc.0}.${loc.1}`
+
+function findAntinodeLocations(part: number): number
+    antinodeLocations := new Set<string>();
+    for freq in antennaMap
+      for i of [0...antennaMap[freq]#]
+        for j of [i + 1...antennaMap[freq]#]
+          [x1, y1] := antennaMap[freq][i]
+          [x2, y2] := antennaMap[freq][j]
+  
+          xdiff := x2 - x1
+          ydiff := y2 - y1
+          
+          antinodeLoc1 .= [x1-xdiff, y1-ydiff]
+          antinodeLoc2 .= [x2+xdiff, y2+ydiff]
+  
+          if part is 1
+            if isInBounds antinodeLoc1
+              antinodeLocations.add asKey antinodeLoc1
+            if isInBounds antinodeLoc2
+              antinodeLocations.add asKey antinodeLoc2
+          else if part is 2
+            antinodeLocations.add asKey [x1, y1]
+            antinodeLocations.add asKey [x2, y2]
+
+            while isInBounds(antinodeLoc1) or isInBounds(antinodeLoc2)
+              antinodeLocations.add asKey antinodeLoc1 if isInBounds antinodeLoc1
+              antinodeLocations.add asKey antinodeLoc2 if isInBounds antinodeLoc2
+              
+              antinodeLoc1 = [antinodeLoc1[0] - xdiff, antinodeLoc1[1] - ydiff]
+              antinodeLoc2 = [antinodeLoc2[0] + xdiff, antinodeLoc2[1] + ydiff]
+    
+    antinodeLocations.size
+
+
+log findAntinodeLocations 1
+log findAntinodeLocations 2
