@@ -222,12 +222,63 @@ function findAntinodeLocations(part: number): number
               antinodeLocations.add asKey antinodeLoc1 if isInBounds antinodeLoc1
               antinodeLocations.add asKey antinodeLoc2 if isInBounds antinodeLoc2
               
-              antinodeLoc1 = [antinodeLoc1[0] - xdiff, antinodeLoc1[1] - ydiff]
-              antinodeLoc2 = [antinodeLoc2[0] + xdiff, antinodeLoc2[1] + ydiff]
+              antinodeLoc1 = [antinodeLoc1.0 - xdiff, antinodeLoc1.1 - ydiff]
+              antinodeLoc2 = [antinodeLoc2.0 + xdiff, antinodeLoc2.1 + ydiff]
+
+    // copy .= cloneDeep grid
+    // for loc of antinodeLocations
+    //   [y, x] := loc.split '.'
+    //   copy[int y][int x] = '#'
+    // log printArray copy
     
     antinodeLocations.size
 
 
 log findAntinodeLocations 1
 log findAntinodeLocations 2
+```
+
+## Day 9: Disk Fragmenter ⭐⭐
+
+```ts
+disk := map input, int
+move := 256
+
+hash := (b: string, i: number) => b is '.' ? 0 : i * (-move + int b.codePointAt 0)
+
+id .= 0
+files: string[] := []
+blocksP1 .= for join d, i of disk
+  if i % 2
+    '.'.repeat d  
+  else
+    file := String.fromCodePoint(move + id++).repeat d
+    files.push file
+    file
+
+blocksP2 .= blocksP1
+// p1
+for file of [...blocksP1].reverse()
+  fileIndex := blocksP1.lastIndexOf file
+  spaceIndex := blocksP1.indexOf '.'
+
+  if spaceIndex < fileIndex and spaceIndex > -1
+    blocksP1 = blocksP1[...fileIndex] + '.'.repeat(file#) + blocksP1[fileIndex + file#..]
+    blocksP1 = blocksP1[...spaceIndex] + file + blocksP1[spaceIndex + file#..]
+    blocksP1
+// p2
+for file of files.reverse()
+  fileIndex := blocksP2.indexOf file
+  spaceIndex := blocksP2.indexOf '.'.repeat file#
+
+  if spaceIndex < fileIndex and spaceIndex > -1
+    blocksP2 = blocksP2[...fileIndex] + '.'.repeat(file#) + blocksP2[fileIndex + file#..]
+    blocksP2 = blocksP2[...spaceIndex] + file + blocksP2[spaceIndex + file#..]
+    blocksP2
+
+log sum for block, i of blocksP1
+  hash block, i
+
+log sum for block, i of blocksP2
+  hash block, i
 ```
