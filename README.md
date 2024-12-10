@@ -282,3 +282,56 @@ log sum for block, i of blocksP1
 log sum for block, i of blocksP2
   hash block, i
 ```
+
+## Day 10: Hoof It ⭐⭐
+
+```ts
+ahead: Record<string, (pos: Point) => Point> := {
+  N: (pos: Point) => ({x: pos.x, y: pos.y - 1}),
+  E: (pos: Point) => ({x: pos.x + 1, y: pos.y}),
+  S: (pos: Point) => ({x: pos.x, y: pos.y + 1}),
+  W: (pos: Point) => ({x: pos.x - 1, y: pos.y}),
+};
+
+grid := getArray2d input 
+
+trailheads: Point[] := []
+loop2d grid, (i, j, _) =>
+  if (int getGridPoint(grid, {x: i, y: j})) is 0
+    trailheads.push({x: i, y: j})
+
+paths := new Set<string>()
+
+function walk(latest: Point, start?: Point): number {
+  value := int getGridPoint(grid, latest)
+
+  if value is 9
+    if start
+      paths.add(`${start.x}, ${start.y} - ${latest.x}, ${latest.y}`)
+    else 
+      return 1
+
+  next := value + 1
+  nP := ahead.N latest
+  nV := int getGridPoint(grid, nP)
+  eP := ahead.E latest
+  eV := int getGridPoint(grid, eP)
+  sP := ahead.S latest
+  sV := int getGridPoint(grid, sP)
+  wP := ahead.W latest
+  wV := int getGridPoint(grid, wP)
+
+  (nV is next ? walk nP, start : 0) +
+  (eV is next ? walk eP, start : 0) +
+  (sV is next ? walk sP, start : 0) +
+  (wV is next ? walk wP, start : 0)
+}
+
+for trailhead of trailheads
+  walk trailhead, trailhead
+
+log paths.size
+
+log for sum trailhead of trailheads
+  walk trailhead
+```

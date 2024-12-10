@@ -188,3 +188,6 @@ export function permutations(chars: string, length: number = chars.length): stri
   flatten for combo of permutations chars, length - 1
     for ch of chars
       combo + ch
+
+export function getGridPoint<T>(grid: T[][], point: Point): T
+  grid[point.y]?.[point.x]
