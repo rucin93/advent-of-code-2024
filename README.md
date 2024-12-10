@@ -327,11 +327,11 @@ function walk(latest: Point, start?: Point): number {
   (wV is next ? walk wP, start : 0)
 }
 
+sum .= 0
 for trailhead of trailheads
   walk trailhead, trailhead
+  sum += walk trailhead
 
 log paths.size
-
-log for sum trailhead of trailheads
-  walk trailhead
+log sum
 ```
