@@ -286,52 +286,40 @@ log sum for block, i of blocksP2
 ## Day 10: Hoof It ⭐⭐
 
 ```ts
+grid := getArray2d input |> .map &.map toNumber
+
 ahead: Record<string, ({x,y}: Point) => Point> := 
   N: ({x, y}) => ({x, y: y - 1})
   E: ({x, y}) => ({x: x + 1, y})
   S: ({x, y}) => ({x, y: y + 1})
   W: ({x, y}) => ({x: x - 1, y})
 
-
-grid := getArray2d input |> .map &.map toNumber
-
+paths := new Set()
 trailheads: Point[] := []
-loop2d grid, (x, y, _) =>
-  if getGridPoint(grid, {x, y}) is 0
-    trailheads.push({x, y})
-
-paths := new Set<string>()
+loop2d grid, (x, y, _) => trailheads.push({x, y}) if getGridPoint(grid, {x, y}) is 0
 
 function walk(step: Point, start?: Point): number {
   value := getGridPoint grid, step
 
   if value is 9
-    if start
-      paths.add(`${start.x}, ${start.y} - ${step.x}, ${step.y}`)
-    else 
-      return 1
+    paths.add(`${start.x}, ${start.y} - ${step.x}, ${step.y}`) if start
+    return 1
 
   next := value + 1
   nP := ahead.N step
-  nV := getGridPoint(grid, nP)
   eP := ahead.E step
-  eV := getGridPoint(grid, eP)
   sP := ahead.S step
-  sV := getGridPoint(grid, sP)
   wP := ahead.W step
-  wV := getGridPoint(grid, wP)
 
-  (nV is next ? walk nP, start : 0) +
-  (eV is next ? walk eP, start : 0) +
-  (sV is next ? walk sP, start : 0) +
-  (wV is next ? walk wP, start : 0)
+  (getGridPoint(grid, nP) is next ? walk nP, start : 0) +
+  (getGridPoint(grid, eP) is next ? walk eP, start : 0) +
+  (getGridPoint(grid, sP) is next ? walk sP, start : 0) +
+  (getGridPoint(grid, wP) is next ? walk wP, start : 0)
 }
 
-sum .= 0
-for trailhead of trailheads
+p2 := for sum trailhead of trailheads
   walk trailhead, trailhead
-  sum += walk trailhead
 
 log paths.size
-log sum
+log p2
 ```
