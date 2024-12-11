@@ -327,7 +327,7 @@ log p2
 ## Day 11: Plutonian Pebbles ⭐⭐
 
 ```ts
-stones .= input.split ' ' |> .map toNumber
+stones .= toNumbers input
 
 cache := new Map<string, number>()
 key := (stone: number, i: number) => `${stone}|${i}`

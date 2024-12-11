@@ -1,4 +1,4 @@
-stones .= input.split ' ' |> .map toNumber
+stones .= toNumbers input
 
 cache := new Map<string, number>()
 key := (stone: number, i: number) => `${stone}|${i}`
