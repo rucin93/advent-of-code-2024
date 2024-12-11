@@ -1,0 +1,36 @@
+stones .= input.split ' ' |> .map toNumber
+
+cache := new Map<string, number>()
+key := (stone: number, i: number) => `${stone}|${i}`
+
+search := (stone: number, i: number): number =>
+  stoneStr := stone.toString()
+  if cache.has(key stone, i) 
+    return cache.get(key stone, i)!
+
+  if i is 0
+    cache.set key(stone, i), 1
+    return 1
+
+  if stone is 0
+    result := search(1, i - 1)
+    cache.set key(stone, i), result
+    return result
+
+  if stoneStr# % 2 is 0
+    left := int stoneStr[<(stoneStr#/2)]
+    right := int stoneStr[>=(stoneStr#/2)]
+
+    result := search(left, i - 1) + search(right, i - 1)
+    cache.set key(stone, i), result
+    return result
+
+  result := search stone * 2024, i - 1
+  cache.set key(stone, i), result
+  result
+
+log sum for _, j of stones
+  search(stones[j], 25)
+
+log sum for _, j of stones
+  search(stones[j], 75)
