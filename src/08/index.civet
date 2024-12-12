@@ -2,7 +2,7 @@ grid := getArray2d input
 
 antennaMap: { [key: string]: number[][]} := {}
 
-loop2d grid, (y, x, freq) =>
+loop2d grid, ({y, x}, freq) =>
   if freq is not '.'
     if not antennaMap[freq]
       antennaMap[freq] = []

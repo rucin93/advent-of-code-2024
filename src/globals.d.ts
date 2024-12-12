@@ -9,9 +9,10 @@ declare global {
   interface Array2d<T> extends Array<T[]> {}
   interface Array3d<T> extends Array<T[][]> {}
 
-  interface Point {
+  interface Point<T>{
     x: number;
     y: number;
+    value?: T
   }
 
   interface Point3d extends Point {

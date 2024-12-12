@@ -8,7 +8,7 @@ ahead: Record<string, ({x,y}: Point) => Point> :=
 
 paths := new Set()
 trailheads: Point[] := []
-loop2d grid, (x, y, _) => trailheads.push({x, y}) if getGridPoint(grid, {x, y}) is 0
+loop2d grid, (p, _) => trailheads.push(p) if getGridPoint(grid, p) is 0
 
 function walk(step: Point, start?: Point): number {
   value := getGridPoint grid, step

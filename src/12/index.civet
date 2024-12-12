@@ -1,0 +1,48 @@
+garden := getArray2d input
+visited := new Set<string>
+CORNERS := [
+  [{x: 0, y: -1}, {x: -1, y: 0}, {x: -1, y: -1}],
+  [{x: 0, y: 1}, {x: -1, y: 0}, {x: -1, y: 1}],
+  [{x: 0, y: -1}, {x: 1, y: 0}, {x: 1, y: -1}],
+  [{x: 0, y: 1}, {x: 1, y: 0}, {x: 1, y: 1}]
+]
+
+findRegion := ({x, y}: Point, type: string, info: {area: number, perimeter: number, sides: number}): void => 
+  key := `${x},${y}`
+  if visited.has(key) return
+  visited.add key
+  info.area++
+
+  for corners of CORNERS
+    [p1, p2, d] := [
+      getGridPoint(garden, {
+        x: x + corners.0.x,
+        y: y + corners.0.y
+      }),
+      getGridPoint(garden, {
+        x: x + corners.1.x,
+        y: y + corners.1.y
+      }),
+      getGridPoint(garden, {
+        x: x + corners.2.x,
+        y: y + corners.2.y
+      })
+    ]
+    if ((p1 is not type and p2 is not type) or (type is p1 and type is p2 and d is not type)) info.sides++
+
+  for p of adjacentCross garden, {x, y}
+    if p.value is type
+      findRegion p, type, info
+    else 
+      info.perimeter++
+
+p1 .= 0
+p2 .= 0
+loop2d garden, (point, type) =>
+  info := {area: 0, perimeter: 0, sides: 0}
+  findRegion(point, type, info)
+  p1 += info.area * info.perimeter
+  p2 += info.area * info.sides
+
+log p1
+log p2

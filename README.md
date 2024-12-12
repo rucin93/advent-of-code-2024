@@ -61,14 +61,14 @@ points: Point[][] := flatten for x of [-1..1]
     for l of [1..3]
       {x: x * l, y: y * l}
 
-log sumLoop2d map, (y, x, item) =>
+log sumLoop2d map, ({y, x}, item) =>
   if item is not 'X' return 0
   sum points.map (row) =>
     'MAS' is for join point of row
       map[y + point.y]?[x + point.x]
 
 validDiagonals := ['MS', 'SM']
-log sumLoop2d map, (y, x, item) =>
+log sumLoop2d map, ({y, x}, item) =>
   if item is not 'A' return 0
   diagonal1 := map[y - 1]?[x - 1] + map[y + 1]?[x + 1]
   diagonal2 := map[y - 1]?[x + 1] + map[y + 1]?[x - 1]
@@ -186,7 +186,7 @@ grid := getArray2d input
 
 antennaMap: { [key: string]: number[][]} := {}
 
-loop2d grid, (y, x, freq) =>
+loop2d grid, ({y, x}, freq) =>
   if freq is not '.'
     if not antennaMap[freq]
       antennaMap[freq] = []
@@ -296,7 +296,7 @@ ahead: Record<string, ({x,y}: Point) => Point> :=
 
 paths := new Set()
 trailheads: Point[] := []
-loop2d grid, (x, y, _) => trailheads.push({x, y}) if getGridPoint(grid, {x, y}) is 0
+loop2d grid, (p, _) => trailheads.push(p) if getGridPoint(grid, p) is 0
 
 function walk(step: Point, start?: Point): number {
   value := getGridPoint grid, step
@@ -363,4 +363,57 @@ log sum for _, j of stones
 
 log sum for _, j of stones
   search(stones[j], 75)
+```
+
+## Day 12: Garden Groups ⭐⭐
+
+```ts
+garden := getArray2d input
+visited := new Set<string>
+CORNERS := [
+  [{x: 0, y: -1}, {x: -1, y: 0}, {x: -1, y: -1}],
+  [{x: 0, y: 1}, {x: -1, y: 0}, {x: -1, y: 1}],
+  [{x: 0, y: -1}, {x: 1, y: 0}, {x: 1, y: -1}],
+  [{x: 0, y: 1}, {x: 1, y: 0}, {x: 1, y: 1}]
+]
+
+findRegion := ({x, y}: Point, type: string, info: {area: number, perimeter: number, sides: number}): void => 
+  key := `${x},${y}`
+  if visited.has(key) return
+  visited.add key
+  info.area++
+
+  for corners of CORNERS
+    [p1, p2, d] := [
+      getGridPoint(garden, {
+        x: x + corners.0.x,
+        y: y + corners.0.y
+      }),
+      getGridPoint(garden, {
+        x: x + corners.1.x,
+        y: y + corners.1.y
+      }),
+      getGridPoint(garden, {
+        x: x + corners.2.x,
+        y: y + corners.2.y
+      })
+    ]
+    if ((p1 is not type and p2 is not type) or (type is p1 and type is p2 and d is not type)) info.sides++
+
+  for p of adjacentCross garden, {x, y}
+    if p.value is type
+      findRegion p, type, info
+    else 
+      info.perimeter++
+
+p1 .= 0
+p2 .= 0
+loop2d garden, (point, type) =>
+  info := {area: 0, perimeter: 0, sides: 0}
+  findRegion(point, type, info)
+  p1 += info.area * info.perimeter
+  p2 += info.area * info.sides
+
+log p1
+log p2
 ```
