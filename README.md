@@ -423,7 +423,7 @@ log p2
 ```ts
 data := input.split("\n\n").map (group) => group.match(/\d+/g)!.map Number
 
-solveMatrix := (...vals: number[]) =>
+solve := (...vals: number[]) =>
   [a, c, b, d, x, y] := vals
   det := a * d - b * c
   if (det is 0) return 0
@@ -433,8 +433,8 @@ solveMatrix := (...vals: number[]) =>
   isInteger(n) and isInteger(m) ? 3 * n + m : 0
 
 log for sum v of data
-  solveMatrix ...v
+  solve ...v
 
 log for sum v of data.map (v) => [...v[0..3], v.4 + 1e13, v.5 + 1e13]
-  solveMatrix ...v
+  solve ...v
 ```
