@@ -199,3 +199,6 @@ export function adjacentCross<T>(grid: T[][], {x, y}: Point)
     {x, y: y + 1, value: grid[y + 1]?.[x]},
     {x: x - 1, y, value: grid[y]?.[x - 1]},
   ]
+
+export function isInteger(nr: any): boolean
+  Number.isInteger nr
