@@ -426,17 +426,15 @@ data := input.split("\n\n").map (group) => group.match(/\d+/g)!.map Number
 solveMatrix := (...vals: number[]) =>
   [a, c, b, d, x, y] := vals
   det := a * d - b * c
-  if (det is 0) return null
+  if (det is 0) return 0
 
   n := (d * x - b * y) / det
   m := (-c * x + a * y) / det
-  isInteger(n) and isInteger(m) ? [n, m] : null
+  isInteger(n) and isInteger(m) ? 3 * n + m : 0
 
 log for sum v of data
-  sol := solveMatrix ...v
-  sol ? sol.0 * 3 + sol.1 : 0
+  solveMatrix ...v
 
-log for sum v of data.map (v) => [...v[0..3], v[4] + 1e13, v[5] + 1e13]
-  sol := solveMatrix ...v
-  sol ? sol.0 * 3 + sol.1 : 0
+log for sum v of data.map (v) => [...v[0..3], v.4 + 1e13, v.5 + 1e13]
+  solveMatrix ...v
 ```
