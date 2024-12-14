@@ -494,7 +494,7 @@ loop
   move robots, grid
   if findChristmasTree grid
     log i
-    // printArray(grid)
+    // printArray grid
     break
   i++
 ```
