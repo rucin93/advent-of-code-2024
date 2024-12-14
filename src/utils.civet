@@ -5,7 +5,7 @@ export function getLines<T extends string>(input: string): T[]
 
 export function getNumbers(input: string, char: string = `,`): number[]
   lines := getLines input
-  lines.length is 1
+  lines# is 1
     ? lines.0.split char |> .map +&
     : lines.map +&
 
@@ -47,8 +47,8 @@ export function loop2d<T>(
   array: T[][],
   callback: ({y, x}: Point, item: T) => void
 ): void
-  for y of [0...array.length]
-    for x of [0...array[y]!.length]
+  for y of [0...array#]
+    for x of [0...array[y]!#]
       callback {y, x}, array[y]![x]!
 
 export function toNumber(str: string): number 
@@ -111,13 +111,13 @@ export function adjacentPoints<T>(arr: T[][], {x, y}: Point)
 export function toKeys<Item, Key extends string>(...keys: Key[])
   function (item: Item[]) 
     obj := {} as Record<Key, Item>
-    for i of [0...keys.length]
+    for i of [0...keys#]
       obj[keys[i]] = item[i]
     obj
 
 export function printArray(arr: any[], empty = '.'): void
-  for y of [0...arr.length]
-    for x of [0...arr[y]!.length]
+  for y of [0...arr#]
+    for x of [0...arr[y]!#]
       process.stdout.write arr[y]![x] ?? empty
     console.log()
 
@@ -170,7 +170,7 @@ export function rotate<T>(arr: T[][]): T[][]
   arr.0.map (_, i) => arr.map((row) => row[i]).reverse()
 
 export function rotateClockwise<T>(arr: T[][]): T[][]
-  arr.0.map (_, i) => arr.map((row) => row[row.length - 1 - i])
+  arr.0.map (_, i) => arr.map((row) => row[row# - 1 - i])
 
 export function abs(nr: number): number
   Math.abs nr
@@ -179,11 +179,11 @@ export function sumLoop2d<T>(
   array: T[][],
   callback: ({y, x}: Point, item: T) => Parameters<typeof int>[0]
 ): number
-  for sum y of [0...array.length]
-    for sum x of [0...array[y]!.length]
+  for sum y of [0...array#]
+    for sum x of [0...array[y]!#]
       int callback {x, y}, array[y]![x]!
 
-export function permutations(chars: string, length: number = chars.length): string[]
+export function permutations(chars: string, length: number = chars#): string[]
   return [''] if length <= 0
   flatten for combo of permutations chars, length - 1
     for ch of chars
@@ -202,13 +202,3 @@ export function adjacentCross<T>(grid: T[][], {x, y}: Point)
 
 export function isInteger(nr: any): boolean
   Number.isInteger nr
-
-export const get1DIndex = (r: number, c: number, width: number) => r * width + c
-
-export const get2DIndex = (index: number, width: number) => [
-  Math.floor(index / width),
-  index % width,
-]
-
-export const wrap = (value: number, min: number, max: number) =>
-  (((value % (max - min)) + max) % max) - min

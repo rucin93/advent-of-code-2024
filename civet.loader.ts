@@ -20,6 +20,7 @@ await plugin({
       source =
         `input from ./input.txt
 { ${utilsExports.join(', ')} } from ../utils.civet
+{ Grid } from ../grid.civet
 { ${lodashExports.join(', ')} } from lodash
 
 ` + source;

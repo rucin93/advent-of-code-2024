@@ -1,0 +1,118 @@
+export class Grid<T>
+  private arr: T[][]
+  constructor(arr: T[][])
+    @arr = arr
+
+  get length(): number
+    @arr#
+
+  get width(): number
+    @arr[0]#
+
+  get height(): number
+    @arr#
+
+  get values(): T[]
+    @arr.flatMap (x) => x
+
+  get(x: number, y: number): T
+  get(point: Point): T
+  get(xOrPoint: number | Point, yCoord?: number): T
+    const { x, y } = typeof xOrPoint === 'number' ? { x: xOrPoint, y: yCoord! } : xOrPoint
+    @arr[y]?.[x] ?? '' as T
+  
+  set(x: number, y: number, value: T): Grid<T>
+  set(xOrPoint: number | Point, yOrValue: number | T, value?: T): Grid<T>
+    if (typeof xOrPoint === 'number') {
+      @arr[yOrValue as number][xOrPoint] = value!
+    } else {
+      @arr[xOrPoint.y][xOrPoint.x] = yOrValue as T
+    }
+    @
+
+  getAdjacentPoints({ x, y }: Point): T[]
+    [
+      @get({ x, y: y - 1 }),
+      @get({ x: x + 1, y }),
+      @get({ x, y: y + 1 }),
+      @get({ x: x - 1, y }),
+    ]
+
+  getAdjacentDiagonals({ x, y }: Point): T[]
+    [
+      @get({ x: x - 1, y: y - 1 }),
+      @get({ x: x + 1, y: y + 1 }),
+      @get({ x: x - 1, y: y + 1 }),
+      @get({ x: x + 1, y: y - 1 }),
+    ]
+
+  getNeighbours(point: Point): T[]
+    [
+      ...@getAdjacentPoints(point),
+      ...@getAdjacentDiagonals(point),
+    ]
+
+  toString(empty = '.')
+    for join row of @arr
+      for join cell of row 
+        (cell ?? empty).toString()
+      `\n`
+
+  find(arg: T & ((point: Point, item: T) => boolean) ): Point | null
+    callback := typeof arg === 'function' ? arg : ((point: Point, item: T) => item === arg as boolean)
+    for y of [0...@arr#]
+      for x of [0...@arr[y]!#]
+        if callback({ x, y }, @arr[y][x])
+          return { x, y }
+    null
+
+  findAll(arg: T & ((point: Point, item: T) => boolean)): Point[]
+    points: Point[] := []
+    callback := typeof arg === 'function' ? arg : ((point: Point, item: T) => item === arg as boolean)
+    for y of [0...@arr#]
+      for x of [0...@arr[y]!#]
+        if callback({ x, y }, @arr[y][x])
+          points.push { x, y }
+    points
+
+  rotate(dir: 'clockwise' | 'counterClockwise' = 'clockwise'): Grid<T>
+    @arr = dir === 'clockwise' ? rotate @arr : rotate rotate rotate @arr
+    @
+
+  toRotated(dir: 'clockwise' | 'counterClockwise' = 'clockwise'): Grid<T>
+    new Grid dir === 'clockwise' ? rotate @arr : rotate rotate rotate @arr
+
+  map<U>(callback: (point: Point, item: T) => U): U[][]
+    @arr.map (row, y) => row.map (item, x) => callback({ x, y }, item)
+
+  clone(): Grid<T>
+    new Grid @arr.map (row) => [...row]
+
+  forEach(callback: (point: Point, item: T) => void): void
+    for y of [0...@arr#]
+      for x of [0...@arr[y]!#]
+        callback({ x, y }, @arr[y][x])
+
+  filter(callback: (point: Point, item: T) => boolean): Grid<T>
+    new Grid @arr.map (row, y) => row.filter (item, x) => callback({ x, y }, item)
+
+  reduce<U>(callback: (acc: U, point: Point, item: T) => U, initialValue: U): U
+    @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => callback(acc, { x, y }, item), acc), initialValue
+
+  some(callback: (point: Point, item: T) => boolean): boolean
+    @arr.some (row, y) => row.some (item, x) => callback({ x, y }, item)
+
+  every(callback: (point: Point, item: T) => boolean): boolean
+    @arr.every (row, y) => row.every (item, x) => callback({ x, y }, item)
+
+  flatMap<U>(callback: (point: Point, item: T) => U[]): U[]
+    @arr.flatMap (row, y) => row.flatMap (item, x) => callback({ x, y }, item)
+
+  flat(): T[]
+    @arr.flat()
+
+  sum(callback: (point: Point, item: T) => number): number
+    @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => acc + callback({ x, y }, item), acc), 0
+  
+  product(callback: (point: Point, item: T) => number): number
+    @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => acc * callback({ x, y }, item), acc), 1
