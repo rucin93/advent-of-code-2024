@@ -219,6 +219,12 @@ export class Grid<T>
 
   get values(): T[]
     @arr.flatMap (x) => x
+  
+  get rows(): T[][]
+    @arr
+  
+  get columns(): T[][]
+    rotate @arr
 
   get(x: number, y: number): T
   get(point: Point): T
@@ -308,6 +314,9 @@ export class Grid<T>
 
   every(callback: (point: Point, item: T) => boolean): boolean
     @arr.every (row, y) => row.every (item, x) => callback({ x, y }, item)
+  
+  none(callback: (point: Point, item: T) => boolean): boolean
+    not @some callback
 
   flatMap<U>(callback: (point: Point, item: T) => U[]): U[]
     @arr.flatMap (row, y) => row.flatMap (item, x) => callback({ x, y }, item)
