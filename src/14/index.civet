@@ -1,0 +1,56 @@
+type Robot = {
+  position: Point,
+  velocity: Point,
+}
+
+[EMPTY, FILLED] := [".", "#"]
+w := 101
+h := 103
+
+midW := int w / 2
+midH := int h / 2
+
+teleportIfNeeded := (value: number, min: number, max: number) => ((value % (max - min)) + max) % max - min
+
+function move(robots: Robot[], grid: string[][])
+  for {position: {x, y}, velocity}, i of robots
+    grid[y][x] = EMPTY
+    newX := teleportIfNeeded(x + velocity.x, 0, w)
+    newY := teleportIfNeeded(y + velocity.y, 0, h)
+    robots[i] = { position: { x: newX, y: newY }, velocity }
+    grid[newY][newX] = FILLED
+
+function countRobotsInQuadrants(robots: Robot[])
+  counts := [0, 0, 0, 0]
+
+  for { position: {x, y} } of robots
+    if (x is midW || y is midH) continue
+    quadrant := (x >= midW ? 1 : 0) + (y >= midH ? 2 : 0)
+    counts[quadrant]++
+
+  return for product val of counts
+    val
+
+function findChristmasTree(grid: string[][])
+  test := line.join("") for join line of grid
+  for i of [w..>=7]
+    if test.includes(FILLED.repeat i) return true 
+  false
+
+lines := getLines input |> .map (l) => l.match(/-?\d+/g)!.map(Number)
+grid := Array(h).fill(0).map () => Array(w).fill EMPTY
+
+robots: Robot[] := []
+lines.forEach ([x, y, vx, vy]) =>
+  robots.push { position: { x, y }, velocity: { x: vx, y: vy } }
+  grid[y][x] = FILLED
+
+i .= 0
+loop
+  log countRobotsInQuadrants robots if i is 100
+  move robots, grid
+  if findChristmasTree grid
+    log i
+    // printArray(grid)
+    break
+  i++
