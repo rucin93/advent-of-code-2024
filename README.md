@@ -524,9 +524,7 @@ next := (p: Point, move: string, grid: Grid) =>
     'v'
       { x: p.x, y: p.y + 1 }
 
-  if grid.get(nextPoint) is '.'
-    return grid.set(nextPoint, grid.get(p)).set(p, '.')
-  if grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
+  if grid.get(nextPoint) is '.' or grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
     return grid.set(nextPoint, grid.get(p)).set(p, '.')
   false
 
