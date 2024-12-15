@@ -455,13 +455,13 @@ midH := int h / 2
 
 teleportIfNeeded := (value: number, min: number, max: number) => ((value % (max - min)) + max) % max - min
 
-function move(robots: Robot[], grid: string[][])
+function move(robots: Robot[], grid: Grid)
   for {position: {x, y}, velocity}, i of robots
-    grid[y][x] = EMPTY
+    grid.set x, y, EMPTY
     newX := teleportIfNeeded(x + velocity.x, 0, w)
     newY := teleportIfNeeded(y + velocity.y, 0, h)
     robots[i] = { position: { x: newX, y: newY }, velocity }
-    grid[newY][newX] = FILLED
+    grid.set newX, newY, FILLED
 
 function countRobotsInQuadrants(robots: Robot[])
   counts := [0, 0, 0, 0]
@@ -474,27 +474,69 @@ function countRobotsInQuadrants(robots: Robot[])
   return for product val of counts
     val
 
-function findChristmasTree(grid: string[][])
-  test := line.join("") for join line of grid
+function findChristmasTree(grid: Grid)
+  test := grid.toString(EMPTY)
   for i of [w..>=7]
     if test.includes(FILLED.repeat i) return true 
   false
 
 lines := getLines input |> .map (l) => l.match(/-?\d+/g)!.map(Number)
-grid := Array(h).fill(0).map () => Array(w).fill EMPTY
+grid := Grid.create w, h, EMPTY
 
 robots: Robot[] := []
 lines.forEach ([x, y, vx, vy]) =>
   robots.push { position: { x, y }, velocity: { x: vx, y: vy } }
-  grid[y][x] = FILLED
+  grid.set x, y, FILLED
 
 i .= 0
 loop
   log countRobotsInQuadrants robots if i is 100
   move robots, grid
+  i++
+
   if findChristmasTree grid
     log i
-    // printArray grid
+    // log grid.toString()
     break
-  i++
+```
+
+## Day 15: Warehouse Woes ⭐⭐
+
+```ts
+data := input.split '\n\n'
+grid := new Grid data.0
+gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
+  '.': '..',
+  '@': '@.',
+  'O': '[]',
+  '#': '##'
+}[t])).join('')).join('\n')
+moves := data.1.replace /\s/g, ''
+
+next := (p: Point, move: string, grid: Grid) =>
+  nextPoint := switch move
+    '>'
+      { x: p.x + 1, y: p.y }
+    '<'
+      { x: p.x - 1, y: p.y }
+    '^'
+      { x: p.x, y: p.y - 1 }
+    'v'
+      { x: p.x, y: p.y + 1 }
+
+  if grid.get(nextPoint) is '.'
+    return grid.set(nextPoint, grid.get(p)).set(p, '.')
+  if grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
+    return grid.set(nextPoint, grid.get(p)).set(p, '.')
+  false
+
+for move of moves
+  next grid.find((_,e) => e is '@')!, move, grid
+  next gridP2.find((_,e) => e is '@')!, move, gridP2
+
+log for sum {x, y} of grid.findAll (_,e) => e is 'O'
+  x + y * 100
+
+log for sum {x, y} of gridP2.findAll (_,e) => e is 'O' or e is '['
+  x + y * 100
 ```

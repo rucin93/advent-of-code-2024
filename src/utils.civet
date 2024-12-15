@@ -205,8 +205,11 @@ export function isInteger(nr: any): boolean
 
 export class Grid<T>
   arr: T[][]
-  constructor(arr: T[][])
-    @arr = arr
+  constructor(arr: string | T[][])
+    if typeof arr is 'string'
+      @arr = getArray2d(arr) as T[][]
+    else
+      @arr = arr
 
   get length(): number
     @arr#
@@ -232,7 +235,7 @@ export class Grid<T>
     { x, y } := typeof xOrPoint === 'number' ? { x: xOrPoint, y: yCoord! } : xOrPoint
     @arr[y]?.[x] ?? '' as T
   
-  set(x: number, y: number, value: T): Grid<T>
+  // set(x: number, y: number, value?: T): Grid<T>
   set(xOrPoint: number | Point, yOrValue: number | T, value?: T): Grid<T>
     if xOrPoint <? 'number'
       @arr[yOrValue as number][xOrPoint] = value!

@@ -1,0 +1,36 @@
+data := input.split '\n\n'
+grid := new Grid data.0
+gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
+  '.': '..',
+  '@': '@.',
+  'O': '[]',
+  '#': '##'
+}[t])).join('')).join('\n')
+moves := data.1.replace /\s/g, ''
+
+next := (p: Point, move: string, grid: Grid) =>
+  nextPoint := switch move
+    '>'
+      { x: p.x + 1, y: p.y }
+    '<'
+      { x: p.x - 1, y: p.y }
+    '^'
+      { x: p.x, y: p.y - 1 }
+    'v'
+      { x: p.x, y: p.y + 1 }
+
+  if grid.get(nextPoint) is '.'
+    return grid.set(nextPoint, grid.get(p)).set(p, '.')
+  if grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
+    return grid.set(nextPoint, grid.get(p)).set(p, '.')
+  false
+
+for move of moves
+  next grid.find((_,e) => e is '@')!, move, grid
+  next gridP2.find((_,e) => e is '@')!, move, gridP2
+
+log for sum {x, y} of grid.findAll (_,e) => e is 'O'
+  x + y * 100
+
+log for sum {x, y} of gridP2.findAll (_,e) => e is 'O' or e is '['
+  x + y * 100
