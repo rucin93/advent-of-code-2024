@@ -32,5 +32,5 @@ for move of moves
 log for sum {x, y} of grid.findAll (_,e) => e is 'O'
   x + y * 100
 
-log for sum {x, y} of gridP2.findAll (_,e) => e is 'O' or e is '['
+log for sum {x, y} of gridP2.findAll (_,e) => e is '['
   x + y * 100
