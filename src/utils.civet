@@ -243,11 +243,11 @@ export class Grid<T>
       @arr[xOrPoint.y][xOrPoint.x] = yOrValue as T
     @
 
-  getAdjacentPoints({ x, y }: Point): T[]
-    . @get { x, y: y - 1 }
-    . @get { x: x + 1, y }
-    . @get { x, y: y + 1 }
-    . @get { x: x - 1, y }
+  getAdjacentPoints({ x, y, direction }: Point ): Point[]
+    . { x, y: y - 1, direction: 'up' }
+    . { x: x + 1, y, direction: 'right' }
+    . { x, y: y + 1, direction: 'down' }
+    . { x: x - 1, y, direction: 'left' }
 
   getAdjacentDiagonals({ x, y }: Point): T[]
     . @get { x: x - 1, y: y - 1 }
@@ -255,7 +255,7 @@ export class Grid<T>
     . @get { x: x - 1, y: y + 1 }
     . @get { x: x + 1, y: y - 1 }
 
-  getNeighbours(point: Point): T[]
+  getNeighbors(point: Point): T[]
     . ...@getAdjacentPoints(point)
     . ...@getAdjacentDiagonals(point)
 

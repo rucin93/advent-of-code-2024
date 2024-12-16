@@ -1,0 +1,51 @@
+map := new Grid input
+start := map.find((point, value) => value is 'S')!
+end := map.find((point, value) => value is 'E')!
+type Direction = 'up' | 'down' | 'left' | 'right'
+type Point = { x: number, y: number, direction?: Direction }
+type Item = {
+  x: number
+  y: number
+  direction: Direction
+  score: number
+  path: Set<string>
+}
+
+opposite := { up: "down", down: "up", left: "right", right: "left" }
+  
+key := (p: Point) => `${p.x},${p.y},${p.direction}`
+curr := { ...start, direction: "up", score: 0, path: new Set([`${start.x},${start.y}`]) }
+queue := [curr]
+visited := new Map [[key({x: start.x, y: start.y, direction: "up"}), curr]]
+
+score .= Infinity
+tiles .= null
+
+until !queue#
+  curr := queue.shift()! as Item
+
+  if curr.x is end.x and curr.y is end.y
+    if curr.score < score then tiles = curr.path.size
+    score = Math.min score, curr.score
+    continue
+
+  map.getAdjacentPoints(curr) 
+  |> .filter (n: Point) => n.direction is not opposite[curr.direction]
+  |> .filter (n: Point) => map.get(n) is not '#'
+  |> .map (n: Point) =>
+    {
+      ...n,
+      path: curr.path.union(new Set([`${n.x},${n.y}`])),
+      score: curr.score + (n.direction is curr.direction ? 1 : 1001)
+    }
+  |> .forEach (n: Item) =>
+    prev := visited.get key n
+    if !prev or prev.score > n.score
+      queue.push n
+      visited.set key(n), n
+    else if prev.score is n.score
+      prev.path = prev.path.union n.path
+
+
+log score
+log tiles

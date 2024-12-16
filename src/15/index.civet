@@ -8,20 +8,36 @@ gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
 }[t])).join('')).join('\n')
 moves := data.1.replace /\s/g, ''
 
-next := (p: Point, move: string, grid: Grid) =>
-  nextPoint := switch move
+next := (p: Point, dir: string, map: Grid ): Point =>
+  dest := switch dir
     '>'
       { x: p.x + 1, y: p.y }
     '<'
       { x: p.x - 1, y: p.y }
     '^'
       { x: p.x, y: p.y - 1 }
-    'v'
+    else
       { x: p.x, y: p.y + 1 }
 
-  if grid.get(nextPoint) is '.' or grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
-    return grid.set(nextPoint, grid.get(p)).set(p, '.')
-  false
+  if map.get(dest) is "O"
+    next dest, dir, map
+  if map.get(dest) is "[" or map.get(dest) is "]"
+    if dest.x is not p.x
+      next dest, dir, map
+    else
+      copy := map.clone()
+      pair := { ...dest }
+      pair.x += map.get(dest) is "[" ? 1 : -1
+      if next(dest, dir, copy) is not dest and next(pair, dir, copy) is not pair
+        next dest, dir, map
+        next pair, dir, map
+  
+  if map.get(dest) is "."
+    map.set dest, map.get(p)
+    map.set p, "."
+    return dest
+
+  return p
 
 for move of moves
   next grid.find((_,e) => e is '@')!, move, grid

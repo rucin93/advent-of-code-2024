@@ -513,20 +513,36 @@ gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
 }[t])).join('')).join('\n')
 moves := data.1.replace /\s/g, ''
 
-next := (p: Point, move: string, grid: Grid) =>
-  nextPoint := switch move
+next := (p: Point, dir: string, map: Grid ): Point =>
+  dest := switch dir
     '>'
       { x: p.x + 1, y: p.y }
     '<'
       { x: p.x - 1, y: p.y }
     '^'
       { x: p.x, y: p.y - 1 }
-    'v'
+    else
       { x: p.x, y: p.y + 1 }
 
-  if grid.get(nextPoint) is '.' or grid.get(nextPoint) is 'O' and next nextPoint!, move, grid
-    return grid.set(nextPoint, grid.get(p)).set(p, '.')
-  false
+  if map.get(dest) is "O"
+    next dest, dir, map
+  if map.get(dest) is "[" or map.get(dest) is "]"
+    if dest.x is not p.x
+      next dest, dir, map
+    else
+      copy := map.clone()
+      pair := { ...dest }
+      pair.x += map.get(dest) is "[" ? 1 : -1
+      if next(dest, dir, copy) is not dest and next(pair, dir, copy) is not pair
+        next dest, dir, map
+        next pair, dir, map
+  
+  if map.get(dest) is "."
+    map.set dest, map.get(p)
+    map.set p, "."
+    return dest
+
+  return p
 
 for move of moves
   next grid.find((_,e) => e is '@')!, move, grid
@@ -537,4 +553,60 @@ log for sum {x, y} of grid.findAll (_,e) => e is 'O'
 
 log for sum {x, y} of gridP2.findAll (_,e) => e is '['
   x + y * 100
+```
+
+## Day 16: Reindeer Maze ⭐⭐
+
+```ts
+map := new Grid input
+start := map.find((point, value) => value is 'S')!
+end := map.find((point, value) => value is 'E')!
+type Direction = 'up' | 'down' | 'left' | 'right'
+type Point = { x: number, y: number, direction?: Direction }
+type Item = {
+  x: number
+  y: number
+  direction: Direction
+  score: number
+  path: Set<string>
+}
+
+opposite := { up: "down", down: "up", left: "right", right: "left" }
+  
+key := (p: Point) => `${p.x},${p.y},${p.direction}`
+curr := { ...start, direction: "up", score: 0, path: new Set([`${start.x},${start.y}`]) }
+queue := [curr]
+visited := new Map [[key({x: start.x, y: start.y, direction: "up"}), curr]]
+
+score .= Infinity
+tiles .= null
+
+until !queue#
+  curr := queue.shift()! as Item
+
+  if curr.x is end.x and curr.y is end.y
+    if curr.score < score then tiles = curr.path.size
+    score = Math.min score, curr.score
+    continue
+
+  map.getAdjacentPoints(curr) 
+  |> .filter (n: Point) => n.direction is not opposite[curr.direction]
+  |> .filter (n: Point) => map.get(n) is not '#'
+  |> .map (n: Point) =>
+    {
+      ...n,
+      path: curr.path.union(new Set([`${n.x},${n.y}`])),
+      score: curr.score + (n.direction is curr.direction ? 1 : 1001)
+    }
+  |> .forEach (n: Item) =>
+    prev := visited.get key n
+    if !prev or prev.score > n.score
+      queue.push n
+      visited.set key(n), n
+    else if prev.score is n.score
+      prev.path = prev.path.union n.path
+
+
+log score
+log tiles
 ```

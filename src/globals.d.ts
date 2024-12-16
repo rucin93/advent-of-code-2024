@@ -12,7 +12,8 @@ declare global {
   interface Point<T>{
     x: number;
     y: number;
-    value?: T
+    value?: T;
+    direction?: string;
   }
 
   interface Point3d extends Point {
