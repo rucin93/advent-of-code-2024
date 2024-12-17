@@ -138,7 +138,7 @@ export function isPoint3d (arg: any): arg is Point3d
 export function log (...args: any[]): void
   console.log ...args
 
-export function int (nr: string | boolean | number): number
+export function int (nr: string | boolean | number | bigint): number
   if nr <? "boolean"
     return nr ? 1 : 0
   if nr <? "string"

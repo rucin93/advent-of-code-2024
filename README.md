@@ -610,3 +610,75 @@ until !queue#
 log score
 log tiles
 ```
+
+## Day 17: Chronospatial Computer ⭐⭐
+
+```ts
+enum Reg { A, B, C }
+
+run := (registers: bigint[], program: bigint[]) =>
+  ptr .= 0n
+  out: bigint[] := []
+
+  runLiteralOp := (op: bigint, cop: bigint) =>
+    noJump .= true
+    getAdv := (): bigint => registers[Reg.A] / 2n ** getComboVal cop
+
+    switch op
+      0n
+        registers[Reg.A] = getAdv()
+      1n
+        registers[Reg.B] ^= cop
+      2n
+        registers[Reg.B] = getComboVal(cop) % 8n
+      3n
+        if registers[Reg.A] is not 0n
+          ptr = cop
+          noJump = false
+      4n
+        registers[Reg.B] ^= registers[Reg.C]
+      5n
+        out.push getComboVal(cop) % 8n
+      6n
+        registers[Reg.B] = getAdv()
+      7n
+        registers[Reg.C] = getAdv()
+    noJump
+
+  getComboVal := (op: bigint) =>
+    switch op
+      0n, 1n, 2n, 3n
+        return op
+      4n
+        return registers[Reg.A]
+      5n
+        return registers[Reg.B]
+      6n
+        return registers[Reg.C]
+    return 0n
+
+  while ptr < program#
+    if runLiteralOp program[int ptr], program[int ptr + 1n]
+      ptr += 2n
+
+  out.join ","
+
+[registerLines, programLines] := input.split /\n\n/
+registers: bigint[] := getLines registerLines |> .map((l) => l.match(/(\d+)/g)!.map(BigInt)[0])
+program := programLines.match(/\d+/g)!.map BigInt
+
+log run registers, program
+
+rp := program.toReversed()
+vals .= [0n]
+while rp#
+  dig := rp.shift()!
+  prevVals := vals
+  vals = []
+  for prev of prevVals
+    for i of [0n..8n]
+      A := prev * 8n + i
+      vals.push A if run([A, 0n, 0n ], program)[0] is dig.toString()
+        
+log vals.reduce (t, v) => v < t ? v : t // sort and pick smallest value
+```
