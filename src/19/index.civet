@@ -1,0 +1,19 @@
+count := memo (line: string, patterns: string[]) =>
+  if(line# is 0) return 1
+  for sum pattern of patterns
+    if line.startsWith pattern
+      count line.slice(pattern#), patterns
+    else 
+      0
+
+[patterns, lines] := input.split "\n\n" |> .map((data, index) => data.split index is 1 ? "\n" : ", ")
+p1 .= 0
+p2 .= 0
+
+for line of lines
+  temp := count line, patterns
+  p1 += temp ? 1 : 0
+  p2 += temp
+
+log p1 - 1 // wtf additional 1 for some reason
+log p2 - 1 // wtf

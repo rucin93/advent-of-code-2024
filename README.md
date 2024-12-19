@@ -625,37 +625,20 @@ run := (registers: bigint[], program: bigint[]) =>
     getAdv := (): bigint => registers[Reg.A] / 2n ** getComboVal cop
 
     switch op
-      0n
-        registers[Reg.A] = getAdv()
-      1n
-        registers[Reg.B] ^= cop
-      2n
-        registers[Reg.B] = getComboVal(cop) % 8n
+      0n then registers[Reg.A] = getAdv()
+      1n then registers[Reg.B] ^= cop
+      2n then registers[Reg.B] = getComboVal(cop) % 8n
       3n
         if registers[Reg.A] is not 0n
           ptr = cop
           noJump = false
-      4n
-        registers[Reg.B] ^= registers[Reg.C]
-      5n
-        out.push getComboVal(cop) % 8n
-      6n
-        registers[Reg.B] = getAdv()
-      7n
-        registers[Reg.C] = getAdv()
+      4n then registers[Reg.B] ^= registers[Reg.C]
+      5n then out.push getComboVal(cop) % 8n
+      6n then registers[Reg.B] = getAdv()
+      7n then registers[Reg.C] = getAdv()
     noJump
 
-  getComboVal := (op: bigint) =>
-    switch op
-      0n, 1n, 2n, 3n
-        return op
-      4n
-        return registers[Reg.A]
-      5n
-        return registers[Reg.B]
-      6n
-        return registers[Reg.C]
-    return 0n
+  getComboVal := (op: bigint) => [0n, 1n, 2n, 3n, registers[Reg.A], registers[Reg.B], registers[Reg.C]][int op]
 
   while ptr < program#
     if runLiteralOp program[int ptr], program[int ptr + 1n]
@@ -673,6 +656,7 @@ rp := program.toReversed()
 vals .= [0n]
 while rp#
   dig := rp.shift()!
+  log dig
   prevVals := vals
   vals = []
   for prev of prevVals
@@ -681,4 +665,63 @@ while rp#
       vals.push A if run([A, 0n, 0n ], program)[0] is dig.toString()
         
 log vals.reduce (t, v) => v < t ? v : t // sort and pick smallest value
+```
+
+## Day 18: RAM Run ⭐⭐
+
+```ts
+wh := 70
+f := 1024
+bytes := getLines input
+
+run := (fallen = f) =>
+  queue: {x:number, y:number, steps: number}[] := [{ x: 0, y: 0, steps: 0 }]
+  visited := new Set(["0,0", ...bytes.slice(0, fallen)])
+  while (queue.length) {
+    curr := queue.shift()!
+    if (curr.x === wh && curr.y === wh) return curr.steps
+    const neighbors = [
+      { x: curr.x + 1, y: curr.y },
+      { x: curr.x - 1, y: curr.y },
+      { x: curr.x, y: curr.y + 1 },
+      { x: curr.x, y: curr.y - 1 },
+    ].filter ({ x, y }) => x >= 0 && x <= wh && y >= 0 && y <= wh && !visited.has(`${x},${y}`)
+    
+    for neighbor of neighbors
+      visited.add `${neighbor.x},${neighbor.y}`
+      queue.push { ...neighbor, steps: curr.steps + 1 }
+  }
+  null
+
+log run()
+
+for (let i = f; i < bytes.length; i++) {
+  if (run(i) is null)
+    log bytes[i - 1]
+    break
+}
+```
+
+## Day 19: Linen Layout ⭐⭐
+
+```ts
+count := memo (line: string, patterns: string[]) =>
+  if(line# is 0) return 1
+  for sum pattern of patterns
+    if line.startsWith pattern
+      count line.slice(pattern#), patterns
+    else 
+      0
+
+[patterns, lines] := input.split "\n\n" |> .map((data, index) => data.split index is 1 ? "\n" : ", ")
+p1 .= 0
+p2 .= 0
+
+for line of lines
+  temp := count line, patterns
+  p1 += temp ? 1 : 0
+  p2 += temp
+
+log p1 - 1 // wtf additional 1 for some reason
+log p2 - 1 // wtf
 ```

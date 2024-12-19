@@ -15,8 +15,7 @@ unless process.env.YEAR
   process.exit 1
 
 unless process.argv.2
-  console.error 'Error: day number not provided'
-  process.exit 1
+  process.argv.2 = new Date().getDate().toString()
 
 dirName := process.argv.2.padStart 2, '0'
 dirPath := path.join process.cwd(), 'src', dirName

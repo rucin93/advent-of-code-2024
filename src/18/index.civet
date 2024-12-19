@@ -1,0 +1,33 @@
+wh := 70
+f := 1024
+bytes := getLines input
+
+run := (fallen = f) =>
+  queue: {x:number, y:number, steps: number}[] := [{ x: 0, y: 0, steps: 0 }]
+  visited := new Set(["0,0", ...bytes.slice(0, fallen)])
+  while (queue.length) {
+    curr := queue.shift()!
+    if (curr.x === wh && curr.y === wh) return curr.steps
+    const neighbors = [
+      { x: curr.x + 1, y: curr.y },
+      { x: curr.x - 1, y: curr.y },
+      { x: curr.x, y: curr.y + 1 },
+      { x: curr.x, y: curr.y - 1 },
+    ].filter ({ x, y }) => x >= 0 && x <= wh && y >= 0 && y <= wh && !visited.has(`${x},${y}`)
+    
+    for neighbor of neighbors
+      visited.add `${neighbor.x},${neighbor.y}`
+      queue.push { ...neighbor, steps: curr.steps + 1 }
+  }
+  null
+
+log run()
+
+for (let i = f; i < bytes.length; i++) {
+  if (run(i) is null)
+    log bytes[i - 1]
+    break
+}
+
+
+

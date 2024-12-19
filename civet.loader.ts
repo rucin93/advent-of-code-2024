@@ -33,13 +33,13 @@ await plugin({
 });
 
 function getExports(source: string) {
-  const regex = /export\s+\{.*?as\s+(\w+)\s*\}|\bexport\s+function\s+(\w+)|export\s+class\s+(\w+)/g;
+  const regex = /export\s+\{.*?as\s+(\w+)\s*\}|\bexport\s+function\s+(\w+)|export\s+class\s+(\w+)|export\s+const\s+(\w+)/g;
 
   const exports: string[] = [];
 
   let match;
   while ((match = regex.exec(source)) !== null) {
-    exports.push(match[1] || match[2] || match[3]);
+    exports.push(match[1] || match[2] || match[3] || match[4]);
   }
 
   return exports;

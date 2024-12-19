@@ -9,37 +9,20 @@ run := (registers: bigint[], program: bigint[]) =>
     getAdv := (): bigint => registers[Reg.A] / 2n ** getComboVal cop
 
     switch op
-      0n
-        registers[Reg.A] = getAdv()
-      1n
-        registers[Reg.B] ^= cop
-      2n
-        registers[Reg.B] = getComboVal(cop) % 8n
+      0n then registers[Reg.A] = getAdv()
+      1n then registers[Reg.B] ^= cop
+      2n then registers[Reg.B] = getComboVal(cop) % 8n
       3n
         if registers[Reg.A] is not 0n
           ptr = cop
           noJump = false
-      4n
-        registers[Reg.B] ^= registers[Reg.C]
-      5n
-        out.push getComboVal(cop) % 8n
-      6n
-        registers[Reg.B] = getAdv()
-      7n
-        registers[Reg.C] = getAdv()
+      4n then registers[Reg.B] ^= registers[Reg.C]
+      5n then out.push getComboVal(cop) % 8n
+      6n then registers[Reg.B] = getAdv()
+      7n then registers[Reg.C] = getAdv()
     noJump
 
-  getComboVal := (op: bigint) =>
-    switch op
-      0n, 1n, 2n, 3n
-        return op
-      4n
-        return registers[Reg.A]
-      5n
-        return registers[Reg.B]
-      6n
-        return registers[Reg.C]
-    return 0n
+  getComboVal := (op: bigint) => [0n, 1n, 2n, 3n, registers[Reg.A], registers[Reg.B], registers[Reg.C]][int op]
 
   while ptr < program#
     if runLiteralOp program[int ptr], program[int ptr + 1n]
