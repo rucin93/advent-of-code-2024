@@ -1,16 +1,16 @@
 grid := getArray2d input |> .map &.map toNumber
 
-ahead: Record<string, ({x,y}: Point) => Point> := 
+ahead: Record<string, ({x,y}: Point<number>) => Point<number>> := 
   N: ({x, y}) => ({x, y: y - 1})
   E: ({x, y}) => ({x: x + 1, y})
   S: ({x, y}) => ({x, y: y + 1})
   W: ({x, y}) => ({x: x - 1, y})
 
 paths := new Set()
-trailheads: Point[] := []
+trailheads: Point<number>[] := []
 loop2d grid, (p, _) => trailheads.push(p) if getGridPoint(grid, p) is 0
 
-function walk(step: Point, start?: Point): number {
+function walk(step: Point<number>, start?: Point<number>): number {
   value := getGridPoint grid, step
 
   if value is 9

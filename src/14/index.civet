@@ -1,6 +1,6 @@
 type Robot = {
-  position: Point,
-  velocity: Point,
+  position: Point<number>,
+  velocity: Point<number>,
 }
 
 [EMPTY, FILLED] := [".", "#"]
@@ -12,7 +12,7 @@ midH := int h / 2
 
 teleportIfNeeded := (value: number, min: number, max: number) => ((value % (max - min)) + max) % max - min
 
-function move(robots: Robot[], grid: Grid)
+function move(robots: Robot[], grid: Grid<string>)
   for {position: {x, y}, velocity}, i of robots
     grid.set x, y, EMPTY
     newX := teleportIfNeeded(x + velocity.x, 0, w)
@@ -31,7 +31,7 @@ function countRobotsInQuadrants(robots: Robot[])
   return for product val of counts
     val
 
-function findChristmasTree(grid: Grid)
+function findChristmasTree(grid: Grid<string>)
   test := grid.toString(EMPTY)
   for i of [w..>=7]
     if test.includes(FILLED.repeat i) return true 

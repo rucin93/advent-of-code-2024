@@ -1,5 +1,5 @@
 map := getArray2d input
-points: Point[][] := flatten for x of [-1..1]
+points: Point<number>[][] := flatten for x of [-1..1]
   for y of [-1..1]
     for l of [1..3]
       {x: x * l, y: y * l}

@@ -12,7 +12,7 @@ enum Direction {
   LEFT = 3
 }
 
-walk := (grid: string[][], { x, y }: Point, dir: Direction) =>
+walk := (grid: string[][], { x, y }: Point<number>, dir: Direction) =>
   path := new Set [`${y}.${x}`]
   positions := new Set [`${y}.${x}.${dir}`]
 

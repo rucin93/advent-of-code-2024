@@ -1,8 +1,7 @@
-map := new Grid input
+map := new Grid<string> input
 start := map.find((point, value) => value is 'S')!
 end := map.find((point, value) => value is 'E')!
 type Direction = 'up' | 'down' | 'left' | 'right'
-type Point = { x: number, y: number, direction?: Direction }
 type Item = {
   x: number
   y: number
@@ -13,7 +12,7 @@ type Item = {
 
 opposite := { up: "down", down: "up", left: "right", right: "left" }
   
-key := (p: Point) => `${p.x},${p.y},${p.direction}`
+key := (p: Point<string>) => `${p.x},${p.y},${p.direction}`
 curr := { ...start, direction: "up", score: 0, path: new Set([`${start.x},${start.y}`]) }
 queue := [curr]
 visited := new Map [[key({x: start.x, y: start.y, direction: "up"}), curr]]
@@ -30,11 +29,12 @@ until !queue#
     continue
 
   map.getAdjacentPoints(curr) 
-  |> .filter (n: Point) => n.direction is not opposite[curr.direction]
-  |> .filter (n: Point) => map.get(n) is not '#'
-  |> .map (n: Point) =>
+  |> .filter (n: Point<string>) => n.direction is not opposite[curr.direction]
+  |> .filter (n: Point<string>) => map.get(n) is not '#'
+  |> .map (n: Point<string>) =>
     {
       ...n,
+      direction: n.direction as Direction,
       path: curr.path.union(new Set([`${n.x},${n.y}`])),
       score: curr.score + (n.direction is curr.direction ? 1 : 1001)
     }

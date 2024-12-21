@@ -1,6 +1,6 @@
 data := input.split '\n\n'
-grid := new Grid data.0
-gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
+grid := new Grid<string> data.0
+gridP2 := new Grid<string> data.0.split('\n').map((row) => [...row].map((t) => ({
   '.': '..',
   '@': '@.',
   'O': '[]',
@@ -8,7 +8,7 @@ gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
 }[t])).join('')).join('\n')
 moves := data.1.replace /\s/g, ''
 
-next := (p: Point, dir: string, map: Grid ): Point =>
+next := (p: Point<string>, dir: string, map: Grid<string> ): Point<string> =>
   dest := switch dir
     '>'
       { x: p.x + 1, y: p.y }

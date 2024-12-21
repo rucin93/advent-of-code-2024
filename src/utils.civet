@@ -259,7 +259,7 @@ export class Grid<T>
     . @get { x: x + 1, y: y - 1 }
 
   getNeighbors(point: Point<T>): T[]
-    . ...@getAdjacentPoints(point)
+    . ...@getAdjacentPoints(point).map @get
     . ...@getAdjacentDiagonals(point)
 
   toString(empty = '.')
@@ -269,16 +269,16 @@ export class Grid<T>
       + '\n'
 
   find(arg: T | ((point: Point<T>, item: T) => boolean) ): Point<T> | null
-    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean)!
+    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean) as Function
     for y of [0...@arr#]
       for x of [0...@arr[y]!#]
         if callback({ x, y }, @arr[y][x])
           return { x, y }
     null
 
-  findAll(arg: T & ((point: Point<T>, item: T) => boolean)): Point<T>[]
+  findAll(arg: T | ((point: Point<T>, item: T) => boolean)): Point<T>[]
     points: Point<T>[] := []
-    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean)
+    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean) as Function
     for y of [0...@arr#]
       for x of [0...@arr[y]!#]
         if callback({ x, y }, @arr[y][x])

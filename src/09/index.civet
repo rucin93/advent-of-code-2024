@@ -1,7 +1,7 @@
 disk := map input, int
 move := 256
 
-hash := (b: string, i: number) => b is '.' ? 0 : i * (-move + int b.codePointAt 0)
+hash := (b: string, i: number) => b is '.' ? 0 : i * (-move + int b.codePointAt(0)!)
 
 id .= 0
 files: string[] := []
