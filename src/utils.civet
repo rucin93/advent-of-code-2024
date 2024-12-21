@@ -28,12 +28,12 @@ export function inRange(min: number, value: number, max: number): boolean
   min <= value <= max
 
 export function getManhattanDistance(
-  a: Point,
-  b: Point = x: 0, y: 0
+  a: Point<any>,
+  b: Point<any> = x: 0, y: 0
 ): number
   Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
 
-export function getDistance(a: Point, b: Point): number
+export function getDistance(a: Point<any>, b: Point<any>): number
   Math.hypot a.x - b.x, a.y - b.y
 
 export function match<
@@ -48,7 +48,7 @@ export function getColumn<T>(array: T[][], columnNumber: number): T[]
 
 export function loop2d<T>(
   array: T[][],
-  callback: ({y, x}: Point, item: T) => void
+  callback: ({y, x}: Point<T>, item: T) => void
 ): void
   for y of [0...array#]
     for x of [0...array[y]!#]
@@ -76,7 +76,7 @@ export function getLcm(a: number | number[], b?: number): number
     : // @ts-ignore
       a * (b / getGcd a, b)
 
-export function adjacentPoints<T>(arr: T[][], {x, y}: Point)
+export function adjacentPoints<T>(arr: T[][], {x, y}: Point<T>)
   [
     item: arr[y - 1]?.[x]
     x: x,
@@ -131,7 +131,7 @@ export function createArray<T>(y: number, x: number, filler: T): T[][]
 export function exhaustiveCheck(arg: never): void
   arg;
 
-export function isPoint (arg: any): arg is Point
+export function isPoint (arg: any): arg is Point<any>
   arg and arg.x <? 'number' and arg.y <? 'number'
 
 
@@ -180,7 +180,7 @@ export function abs(nr: number): number
 
 export function sumLoop2d<T>(
   array: T[][],
-  callback: ({y, x}: Point, item: T) => Parameters<typeof int>[0]
+  callback: ({y, x}: Point<T>, item: T) => Parameters<typeof int>[0]
 ): number
   for sum y of [0...array#]
     for sum x of [0...array[y]!#]
@@ -192,10 +192,10 @@ export function permutations(chars: string, length: number = chars#): string[]
     for ch of chars
       combo + ch
 
-export function getGridPoint<T>(grid: T[][], point: Point): T
+export function getGridPoint<T>(grid: T[][], point: Point<T>): T
   grid[point.y]?.[point.x]
 
-export function adjacentCross<T>(grid: T[][], {x, y}: Point)
+export function adjacentCross<T>(grid: T[][], {x, y}: Point<T>)
   [
     {x, y: y - 1, value: grid[y - 1]?.[x]},
     {x: x + 1, y, value: grid[y]?.[x + 1]},
@@ -233,32 +233,32 @@ export class Grid<T>
     rotate @arr
 
   get(x: number, y: number): T
-  get(point: Point): T
-  get(xOrPoint: number | Point, yCoord?: number): T
+  get(point: Point<T>): T
+  get(xOrPoint: number | Point<T>, yCoord?: number): T
     { x, y } := typeof xOrPoint === 'number' ? { x: xOrPoint, y: yCoord! } : xOrPoint
     @arr[y]?.[x] ?? '' as T
   
   // set(x: number, y: number, value?: T): Grid<T>
-  set(xOrPoint: number | Point, yOrValue: number | T, value?: T): Grid<T>
+  set(xOrPoint: number | Point<T>, yOrValue: number | T, value?: T): Grid<T>
     if xOrPoint <? 'number'
       @arr[yOrValue as number][xOrPoint] = value!
     else
       @arr[xOrPoint.y][xOrPoint.x] = yOrValue as T
     @
 
-  getAdjacentPoints({ x, y, direction }: Point ): Point[]
+  getAdjacentPoints({ x, y, direction }: Point<T> ): Point<T>[]
     . { x, y: y - 1, direction: 'up' }
     . { x: x + 1, y, direction: 'right' }
     . { x, y: y + 1, direction: 'down' }
     . { x: x - 1, y, direction: 'left' }
 
-  getAdjacentDiagonals({ x, y }: Point): T[]
+  getAdjacentDiagonals({ x, y }: Point<T>): T[]
     . @get { x: x - 1, y: y - 1 }
     . @get { x: x + 1, y: y + 1 }
     . @get { x: x - 1, y: y + 1 }
     . @get { x: x + 1, y: y - 1 }
 
-  getNeighbors(point: Point): T[]
+  getNeighbors(point: Point<T>): T[]
     . ...@getAdjacentPoints(point)
     . ...@getAdjacentDiagonals(point)
 
@@ -268,17 +268,17 @@ export class Grid<T>
         (cell ?? empty).toString()
       + '\n'
 
-  find(arg: T & ((point: Point, item: T) => boolean) ): Point | null
-    callback := typeof arg === 'function' ? arg : ((point: Point, item: T) => item === arg as boolean)
+  find(arg: T | ((point: Point<T>, item: T) => boolean) ): Point<T> | null
+    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean)!
     for y of [0...@arr#]
       for x of [0...@arr[y]!#]
         if callback({ x, y }, @arr[y][x])
           return { x, y }
     null
 
-  findAll(arg: T & ((point: Point, item: T) => boolean)): Point[]
-    points: Point[] := []
-    callback := typeof arg === 'function' ? arg : ((point: Point, item: T) => item === arg as boolean)
+  findAll(arg: T & ((point: Point<T>, item: T) => boolean)): Point<T>[]
+    points: Point<T>[] := []
+    callback := typeof arg === 'function' ? arg : ((point: Point<T>, item: T) => item === arg as boolean)
     for y of [0...@arr#]
       for x of [0...@arr[y]!#]
         if callback({ x, y }, @arr[y][x])
@@ -292,43 +292,67 @@ export class Grid<T>
   toRotated(dir: 'clockwise' | 'counterClockwise' = 'clockwise'): Grid<T>
     new Grid dir === 'clockwise' ? rotate @arr : rotate rotate rotate @arr
 
-  map<U>(callback: (point: Point, item: T) => U): U[][]
+  map<U>(callback: (point: Point<T>, item: T) => U): U[][]
     @arr.map (row, y) => row.map (item, x) => callback({ x, y }, item)
 
   clone(): Grid<T>
     new Grid @arr.map (row) => [...row]
 
-  forEach(callback: (point: Point, item: T) => void): void
+  forEach(callback: (point: Point<T>, item: T) => void): void
     for y of [0...@arr#]
       for x of [0...@arr[y]!#]
         callback({ x, y }, @arr[y][x])
 
-  filter(callback: (point: Point, item: T) => boolean): Grid<T>
+  filter(callback: (point: Point<T>, item: T) => boolean): Grid<T>
     new Grid @arr.map (row, y) => row.filter (item, x) => callback({ x, y }, item)
 
-  reduce<U>(callback: (acc: U, point: Point, item: T) => U, initialValue: U): U
+  reduce<U>(callback: (acc: U, point: Point<T>, item: T) => U, initialValue: U): U
     @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => callback(acc, { x, y }, item), acc), initialValue
 
-  some(callback: (point: Point, item: T) => boolean): boolean
+  some(callback: (point: Point<T>, item: T) => boolean): boolean
     @arr.some (row, y) => row.some (item, x) => callback({ x, y }, item)
 
-  every(callback: (point: Point, item: T) => boolean): boolean
+  every(callback: (point: Point<T>, item: T) => boolean): boolean
     @arr.every (row, y) => row.every (item, x) => callback({ x, y }, item)
   
-  none(callback: (point: Point, item: T) => boolean): boolean
+  none(callback: (point: Point<T>, item: T) => boolean): boolean
     not @some callback
 
-  flatMap<U>(callback: (point: Point, item: T) => U[]): U[]
+  flatMap<U>(callback: (point: Point<T>, item: T) => U[]): U[]
     @arr.flatMap (row, y) => row.flatMap (item, x) => callback({ x, y }, item)
 
   flat(): T[]
     @arr.flat()
 
-  sum(callback: (point: Point, item: T) => number): number
+  sum(callback: (point: Point<T>, item: T) => number): number
     @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => acc + callback({ x, y }, item), acc), 0
   
-  product(callback: (point: Point, item: T) => number): number
+  product(callback: (point: Point<T>, item: T) => number): number
     @arr.reduce (acc, row, y) => row.reduce((acc, item, x) => acc * callback({ x, y }, item), acc), 1
+  
+  isInBounds(point: Point<T>): boolean
+    0 <= point.x < @width and 0 <= point.y < @height
 
   @create<T>(w: number, h: number, filler: T): Grid<T>
     new Grid Array(h).fill(0).map () => Array(w).fill filler
+
+
+export class Maze<T> extends Grid<T>
+  findPath(
+    start: Point<T>,
+    end: Point<T>,
+    isWalkable: (point: Point<T>, item: T) => boolean
+  ): Point<T>[] | null
+    visited := new Set<string>()
+    queue := [{ point: start, path: [start] }]
+    while queue#
+      { point, path } := queue.shift()!
+      if point.x is end.x and point.y is end.y
+        return path
+      for neighbor of @getAdjacentPoints(point)
+        if @.isInBounds(neighbor) and isWalkable(neighbor, @get(neighbor))
+          key := `${neighbor.x},${neighbor.y}`
+          if not visited.has key
+            visited.add key
+            queue.push { point: neighbor, path: [...path, neighbor] }
+    null

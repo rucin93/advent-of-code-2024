@@ -656,7 +656,6 @@ rp := program.toReversed()
 vals .= [0n]
 while rp#
   dig := rp.shift()!
-  log dig
   prevVals := vals
   vals = []
   for prev of prevVals
@@ -724,4 +723,59 @@ for line of lines
 
 log p1 - 1 // wtf additional 1 for some reason
 log p2 - 1 // wtf
+```
+
+## Day 20: Race Condition ⭐⭐
+
+```ts
+maze := new Maze<string> input
+
+START := maze.find((_, i) => i is 'S')!
+END := maze.find((_, i) => i is 'E')!
+save := 100
+path := maze.findPath(START, END, (_, val) => val is not '#')!
+count := (cheat: number) =>
+  for sum i of [0..(path# - save)]
+    for sum j of [(i + save)..<path#]
+      distance := getManhattanDistance path[i], path[j]
+      j - i - distance >= save && distance <= cheat ? 1 : 0
+
+log count 2
+log count 20
+```
+
+## Day 21: Keypad Conundrum ⭐⭐
+
+```ts
+keys := new Grid "789\n456\n123\nX0A"
+arrows := new Grid "X^A\n<v>"
+keydown := memo (code: string, robots: number, human = false) =>
+  if robots is 0 
+    return code#
+  pad := human ? keys : arrows
+  curr .= pad.find "A"
+  count .= 0
+  for button of code
+    to := pad.find(button)!
+    queue := [{ ...curr, push: "" }]
+    min .= Infinity
+    while queue#
+      //@ts-ignore
+      { x, y, push } := queue.shift()
+      if (isEqualWith {x, y}, pad.find "X") continue
+      if (isEqualWith {x, y}, to)
+        min = Math.min min, keydown `${push}A`, human ? robots : robots - 1
+      if (to.x > x) queue.push { x: x + 1, y, push: `${push}>` }
+      if (to.x < x) queue.push { x: x - 1, y, push: `${push}<` }
+      if (to.y > y) queue.push { x, y: y + 1, push: `${push}v` }
+      if (to.y < y) queue.push { x, y: y - 1, push: `${push}^` }
+    count += min
+    curr = to
+  count
+
+log for sum code of getLines input 
+  int(code) * keydown code, 2, true
+
+log for sum code of getLines input 
+  int(code) * keydown code, 25, true
 ```

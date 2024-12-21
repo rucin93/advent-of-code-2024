@@ -1,0 +1,14 @@
+maze := new Maze<string> input
+
+START := maze.find((_, i) => i is 'S')!
+END := maze.find((_, i) => i is 'E')!
+save := 100
+path := maze.findPath(START, END, (_, val) => val is not '#')!
+count := (cheat: number) =>
+  for sum i of [0..(path# - save)]
+    for sum j of [(i + save)..<path#]
+      distance := getManhattanDistance path[i], path[j]
+      j - i - distance >= save && distance <= cheat ? 1 : 0
+
+log count 2
+log count 20
