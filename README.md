@@ -56,7 +56,7 @@ input.match /mul\(\d+,\d+\)|do(|n't)\(\)/g |> ?.reduce (acc, match) =>
 
 ```ts
 map := getArray2d input
-points: Point[][] := flatten for x of [-1..1]
+points: Point<number>[][] := flatten for x of [-1..1]
   for y of [-1..1]
     for l of [1..3]
       {x: x * l, y: y * l}
@@ -117,7 +117,7 @@ enum Direction {
   LEFT = 3
 }
 
-walk := (grid: string[][], { x, y }: Point, dir: Direction) =>
+walk := (grid: string[][], { x, y }: Point<number>, dir: Direction) =>
   path := new Set [`${y}.${x}`]
   positions := new Set [`${y}.${x}.${dir}`]
 
@@ -244,7 +244,7 @@ log findAntinodeLocations 2
 disk := map input, int
 move := 256
 
-hash := (b: string, i: number) => b is '.' ? 0 : i * (-move + int b.codePointAt 0)
+hash := (b: string, i: number) => b is '.' ? 0 : i * (-move + int b.codePointAt(0)!)
 
 id .= 0
 files: string[] := []
@@ -288,17 +288,17 @@ log sum for block, i of blocksP2
 ```ts
 grid := getArray2d input |> .map &.map toNumber
 
-ahead: Record<string, ({x,y}: Point) => Point> := 
+ahead: Record<string, ({x,y}: Point<number>) => Point<number>> := 
   N: ({x, y}) => ({x, y: y - 1})
   E: ({x, y}) => ({x: x + 1, y})
   S: ({x, y}) => ({x, y: y + 1})
   W: ({x, y}) => ({x: x - 1, y})
 
 paths := new Set()
-trailheads: Point[] := []
+trailheads: Point<number>[] := []
 loop2d grid, (p, _) => trailheads.push(p) if getGridPoint(grid, p) is 0
 
-function walk(step: Point, start?: Point): number {
+function walk(step: Point<number>, start?: Point<number>): number {
   value := getGridPoint grid, step
 
   if value is 9
@@ -377,7 +377,7 @@ CORNERS := [
   [{x: 0, y: 1}, {x: 1, y: 0}, {x: 1, y: 1}]
 ]
 
-findRegion := ({x, y}: Point, type: string, info: {area: number, perimeter: number, sides: number}): void => 
+findRegion := ({x, y}: Point<any>, type: string, info: {area: number, perimeter: number, sides: number}): void => 
   key := `${x},${y}`
   if visited.has(key) return
   visited.add key
@@ -442,8 +442,8 @@ log for sum v of data.map (v) => [...v[0..3], v.4 + 1e13, v.5 + 1e13]
 
 ```ts
 type Robot = {
-  position: Point,
-  velocity: Point,
+  position: Point<number>,
+  velocity: Point<number>,
 }
 
 [EMPTY, FILLED] := [".", "#"]
@@ -455,7 +455,7 @@ midH := int h / 2
 
 teleportIfNeeded := (value: number, min: number, max: number) => ((value % (max - min)) + max) % max - min
 
-function move(robots: Robot[], grid: Grid)
+function move(robots: Robot[], grid: Grid<string>)
   for {position: {x, y}, velocity}, i of robots
     grid.set x, y, EMPTY
     newX := teleportIfNeeded(x + velocity.x, 0, w)
@@ -474,7 +474,7 @@ function countRobotsInQuadrants(robots: Robot[])
   return for product val of counts
     val
 
-function findChristmasTree(grid: Grid)
+function findChristmasTree(grid: Grid<string>)
   test := grid.toString(EMPTY)
   for i of [w..>=7]
     if test.includes(FILLED.repeat i) return true 
@@ -504,8 +504,8 @@ loop
 
 ```ts
 data := input.split '\n\n'
-grid := new Grid data.0
-gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
+grid := new Grid<string> data.0
+gridP2 := new Grid<string> data.0.split('\n').map((row) => [...row].map((t) => ({
   '.': '..',
   '@': '@.',
   'O': '[]',
@@ -513,7 +513,7 @@ gridP2 := new Grid data.0.split('\n').map((row) => [...row].map((t) => ({
 }[t])).join('')).join('\n')
 moves := data.1.replace /\s/g, ''
 
-next := (p: Point, dir: string, map: Grid ): Point =>
+next := (p: Point<string>, dir: string, map: Grid<string> ): Point<string> =>
   dest := switch dir
     '>'
       { x: p.x + 1, y: p.y }
@@ -558,11 +558,10 @@ log for sum {x, y} of gridP2.findAll (_,e) => e is '['
 ## Day 16: Reindeer Maze ⭐⭐
 
 ```ts
-map := new Grid input
+map := new Grid<string> input
 start := map.find((point, value) => value is 'S')!
 end := map.find((point, value) => value is 'E')!
 type Direction = 'up' | 'down' | 'left' | 'right'
-type Point = { x: number, y: number, direction?: Direction }
 type Item = {
   x: number
   y: number
@@ -573,7 +572,7 @@ type Item = {
 
 opposite := { up: "down", down: "up", left: "right", right: "left" }
   
-key := (p: Point) => `${p.x},${p.y},${p.direction}`
+key := (p: Point<string>) => `${p.x},${p.y},${p.direction}`
 curr := { ...start, direction: "up", score: 0, path: new Set([`${start.x},${start.y}`]) }
 queue := [curr]
 visited := new Map [[key({x: start.x, y: start.y, direction: "up"}), curr]]
@@ -590,11 +589,12 @@ until !queue#
     continue
 
   map.getAdjacentPoints(curr) 
-  |> .filter (n: Point) => n.direction is not opposite[curr.direction]
-  |> .filter (n: Point) => map.get(n) is not '#'
-  |> .map (n: Point) =>
+  |> .filter (n: Point<string>) => n.direction is not opposite[curr.direction]
+  |> .filter (n: Point<string>) => map.get(n) is not '#'
+  |> .map (n: Point<string>) =>
     {
       ...n,
+      direction: n.direction as Direction,
       path: curr.path.union(new Set([`${n.x},${n.y}`])),
       score: curr.score + (n.direction is curr.direction ? 1 : 1001)
     }
@@ -776,4 +776,31 @@ log for sum code of getLines input
   int(code) * keydown code, 2 + 1, keys
 log for sum code of getLines input 
   int(code) * keydown code, 25 + 1, keys
+```
+
+## Day 22: Monkey Market ⭐⭐
+
+```ts
+numbers := getLines input |> .map BigInt
+hash := (n: bigint) => (n = (n ^ n << 6n) % 16777216n, n = n ^ n >> 5n, n = (n ^ n << 11n) % 16777216n, n)
+p1 .= numbers
+for [0..<2000] p1 = p1.map hash
+log int p1.reduce (a, b) => a + b, 0n // need to sum like this because of bigint
+
+p2 .= numbers
+differences: bigint[][] := p2.map(() => [])
+cache: Record<string, {sum: bigint, row: number[]}> := {}
+for [0..<2000]
+  p2 = p2.map (curr, index) =>
+    next := hash curr
+    differences[index].push next % 10n - curr % 10n
+    if differences[index]# is 4
+      value := cache[differences[index].join(",")] || { sum: 0n, row: [] }
+      if !value.row.includes index
+        value.row.push index
+        value.sum += next % 10n
+      cache[differences[index].join(",")] = value
+      differences[index].shift()
+    next
+log Math.max ...Object.values(cache).map (v) => int v.sum
 ```

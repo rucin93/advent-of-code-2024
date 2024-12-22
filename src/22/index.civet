@@ -1,0 +1,22 @@
+numbers := getLines input |> .map BigInt
+hash := (n: bigint) => (n = (n ^ n << 6n) % 16777216n, n = n ^ n >> 5n, n = (n ^ n << 11n) % 16777216n, n)
+p1 .= numbers
+for [0..<2000] p1 = p1.map hash
+log int p1.reduce (a, b) => a + b, 0n // need to sum like this because of bigint
+
+p2 .= numbers
+differences: bigint[][] := p2.map(() => [])
+cache: Record<string, {sum: bigint, row: number[]}> := {}
+for [0..<2000]
+  p2 = p2.map (curr, index) =>
+    next := hash curr
+    differences[index].push next % 10n - curr % 10n
+    if differences[index]# is 4
+      value := cache[differences[index].join(",")] || { sum: 0n, row: [] }
+      if !value.row.includes index
+        value.row.push index
+        value.sum += next % 10n
+      cache[differences[index].join(",")] = value
+      differences[index].shift()
+    next
+log Math.max ...Object.values(cache).map (v) => int v.sum
