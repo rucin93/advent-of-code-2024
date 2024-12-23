@@ -1,17 +1,40 @@
-connect := (networks: string[][], connections: string[][]) =>
-  result: Set<string> := new Set()
-  for address of networks
-    address
-      .map((c) => connections.filter (pair) => pair.includes(c) |> .map (pair) => pair.find (x) => x is not c)
-      .map (items) => new Set items
-      .reduce (a, b) => a.intersection b
-      .forEach (intersection) => result.add [...address, intersection].sort().join ","
-  result
-// p1
-connections := getLines input |> .map (line) => line.split "-"
-log [...connect connections, connections].filter((x) => x.match(/(^t|,t)/))#
-// p2
-networks .= connections
-while networks# > 1
-  networks = [...connect networks, connections].map (x) => x.split ","
-log networks[0].sort().join(",")
+// Bron-Kerbosch algorithm for finding the maximum clique in a graph
+// https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+type Graph = Record<string, Set<string>>
+graph: Graph := {}
+network: [string, string][] := []
+
+for line of getLines input
+  [a, b] := line.split "-"
+  network.push([a, b])
+  graph[a] ||= new Set()
+  graph[b] ||= new Set()
+  graph[a].add b
+  graph[b].add a
+
+results := new Set<string>()
+for [node, neighbors] of Object.entries graph
+  for neighbor of neighbors
+    neighborNodes := graph[neighbor]
+    intersection := neighborNodes.intersection neighbors
+    if intersection.size >= 1
+      [...intersection].forEach (n) => results.add [node, neighbor, n].sort().join ","
+log ([...results].filter (r) => r.split(",").some (n) => n.startsWith "t")#
+
+max: string[] .= []
+bronKerbosch := (clique: string[], candidates: string[], excluded: string[]) =>
+  if candidates# is 0 && excluded# is 0
+    if clique# > max#
+      max = clique.slice()
+    return
+
+  for vertex of candidates
+    newClique := clique.concat vertex
+    newCandidates := candidates.filter (u) => graph[vertex].has u
+    newExcluded := excluded.filter (u) => graph[vertex].has u
+    bronKerbosch newClique, newCandidates, newExcluded
+    candidates.splice candidates.indexOf(vertex), 1
+    excluded.push vertex
+
+bronKerbosch [], Object.keys(graph), []
+log max.sort().join ","
