@@ -1,0 +1,17 @@
+connect := (networks: string[][], connections: string[][]) =>
+  result: Set<string> := new Set()
+  for address of networks
+    address
+      .map((c) => connections.filter (pair) => pair.includes(c) |> .map (pair) => pair.find (x) => x is not c)
+      .map (items) => new Set items
+      .reduce (a, b) => a.intersection b
+      .forEach (intersection) => result.add [...address, intersection].sort().join ","
+  result
+// p1
+connections := getLines input |> .map (line) => line.split "-"
+log [...connect connections, connections].filter((x) => x.match(/(^t|,t)/))#
+// p2
+networks .= connections
+while networks# > 1
+  networks = [...connect networks, connections].map (x) => x.split ","
+log networks[0].sort().join(",")
