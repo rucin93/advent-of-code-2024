@@ -1,0 +1,61 @@
+
+[wiresData, instructionsData] := input.split '\n\n' |> .map getLines
+
+type Instruction = {
+  in1: string
+  op: string
+  in2: string
+  out: string
+  executed: boolean
+}
+
+wires: Record<string, number> := {}
+for wire of wiresData
+  [key, val]: string[] := wire.split ': '
+  wires[key] = int val
+
+instructions: Instruction[] := instructionsData.map (item) =>
+    [in1, op, in2, _, out] := item.split ' '
+    { in1, op, in2, out, executed: false }
+
+operation: Record<string, (a: number, b: number) => number> :=
+  AND: (a: number, b: number) => a & b,
+  OR: (a: number, b: number) => a | b,
+  XOR: (a: number, b: number) => a ^ b
+
+while instructions.some (instruction) => !instruction.executed
+  for instruction of instructions
+    {in1, op, in2, out, executed} := instruction
+    if executed then continue
+
+    if wires[in1] is not undefined and wires[in2] is not undefined
+      wires[out] = operation[op] wires[in1], wires[in2]
+      instruction.executed = true
+
+log parseInt Object.keys(wires).filter((w) => w.0 is 'z').sort().reverse().map((w) => wires[w]).join(''), 2
+
+GET: Record<string, (...x: string[]) => Instruction | undefined > := {
+  XA: (x: string, id:string) => instructions.find(({in1, op, in2}) => ((in1 is `x${id}` and in2 is `y${id}`) or (in1 is `y${id}` and in2 is `x${id}`)) && op is x),
+  Z: (x: string) => instructions.find(({out}) => out is `z${x}`),
+  OA: (x: string) => instructions.find(({in1, in2}) => [in1, in2].includes(x))
+}
+
+incorrect := []
+for i of [0..<45]
+  id := i.toString().padStart 2, '0'
+  XOR := GET.XA "XOR", id
+  AND := GET.XA "AND", id
+  z := GET.Z id
+  if not XOR or not AND or not z then continue
+
+  if z.op is not 'XOR' then incorrect.push z.out
+
+  OR := GET.OA AND.out
+  if OR and OR.op is not 'OR' and i > 0 then incorrect.push AND.out
+
+  after := GET.OA XOR.out
+  if after and after.op is 'OR' then incorrect.push XOR.out
+
+incorrect.push ...instructions.filter(({in1, op, in2, out}) => !/[xy]/.test(in1.0) and !/[xy]/.test(in2.0) and !/[z]/.test(out.0) and op is 'XOR').map (x) => x.out
+
+log incorrect.sort().join ','

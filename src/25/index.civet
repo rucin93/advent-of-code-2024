@@ -1,0 +1,8 @@
+keys: number[][] := []
+locks: number[][] := []
+
+input.split "\n\n" |> .forEach (item) => (item.startsWith("#####") ? locks : keys).push new Grid(item).columns.map (e) => e.filter((x) => x is '#')#
+
+log for sum lock of locks
+  for sum key of keys
+    int lock.every (_, i) => lock[i] + key[i] < 8
